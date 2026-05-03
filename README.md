@@ -14,6 +14,11 @@ flowchart LR
   C --> D[.pptx]
 ```
 
+<p align="center">
+  <img src="docs/diagrams/co-wpsppt-flow.svg" alt="CO-WPSppt：三种入口汇聚 wps_dispatch，经 wps-driver 与 WPS COM 输出 pptx" width="820"/>
+</p>
+<p align="center"><sub>矢量图源文件：<a href="docs/diagrams/co-wpsppt-flow.svg">docs/diagrams/co-wpsppt-flow.svg</a>（可单独引用、改色或翻译）</sub></p>
+
 | 你怎么触发 | 实际发生的事 |
 |------------|----------------|
 | 本机 PowerShell | `.\tools\wps_dispatch.ps1 -Action <action> -ArgsJson '<json>'` |

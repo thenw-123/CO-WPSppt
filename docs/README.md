@@ -2,6 +2,7 @@
 
 | 文档 | 内容 |
 |------|------|
+| [diagrams/co-wpsppt-flow.svg](diagrams/co-wpsppt-flow.svg) | 架构流程图（三种入口 → `wps_dispatch` → COM → `.pptx`）；README 内嵌同图。 |
 | [CO-WPSppt-GitHub发布.md](CO-WPSppt-GitHub发布.md) | 扩展打包、GitHub Releases / `releases/` 分发、MCP 能力边界。 |
 | [MCP-OpenClaw与wps-ppt.md](MCP-OpenClaw与wps-ppt.md) | Cursor MCP + OpenClaw Gateway 接入 `wps-ppt` 工具。 |
 
