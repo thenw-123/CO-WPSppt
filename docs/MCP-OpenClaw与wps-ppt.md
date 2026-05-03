@@ -30,7 +30,7 @@
 
 - 「先 **`openclaw_discover`**，确认有没有 **`wps-ppt`**。」
 - 「用 **`openclaw_skill`** 查 **`wps-ppt`** 的 action 列表。」
-- 「**`openclaw_invoke`**：`tool` = `wps-ppt`，`action` = `validate-spec`，`args_json` = `{\"specPath\":\"specs/art-philosophy-beauty.json\"}`。」
+- 「**`openclaw_invoke`**：`tool` = `wps-ppt`，`action` = `validate-spec`，`args_json` = `{\"specPath\":\"examples/decks/art-philosophy-beauty.json\"}`。」
 - 「同上，`action` 改成 `run-spec` 生成 pptx。」
 
 注意：`args_json` 在部分客户端里需转义引号；若 Gateway 走 Shell 模板，需与 [manifest.json](../manifest.json) 里 `preferredDispatch` 的 JSON 约定一致。

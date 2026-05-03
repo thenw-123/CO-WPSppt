@@ -1,4 +1,4 @@
-# Generate thematic PNG assets for specs/art-philosophy-beauty.json (matplotlib, no network).
+# Generate thematic PNG assets for examples/decks/art-philosophy-beauty.json (matplotlib, no network).
 from __future__ import annotations
 
 import math
@@ -137,8 +137,8 @@ def cover_band(out: Path) -> None:
 
 
 def main() -> int:
-    root = Path(__file__).resolve().parents[1]
-    d = root / "assets" / "art-philosophy"
+    root = Path(__file__).resolve().parents[2]
+    d = root / "examples" / "assets" / "art-philosophy"
     d.mkdir(parents=True, exist_ok=True)
     gist_flow(d / "gist-flow.png")
     for i in range(4):

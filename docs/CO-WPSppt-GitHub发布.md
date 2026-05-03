@@ -12,7 +12,7 @@
 2. 在项目根目录初始化/绑定远程并推送：
 
    ```powershell
-   cd "d:\第一个系统\cursor-openclaw-wps-ppt"
+   cd "<仓库根目录>"
    git init
    git checkout -b main
    git remote add origin https://github.com/thenw-123/CO-WPSppt.git
@@ -26,7 +26,7 @@
 ## 二、本地打包（不上传 Release 时）
 
 ```powershell
-Set-Location -LiteralPath "d:\第一个系统\cursor-openclaw-wps-ppt\extension"
+Set-Location -LiteralPath "<仓库根目录>\extension"
 npm install
 npm run vscode:package
 ```
@@ -42,7 +42,7 @@ npm run vscode:package
 3. 创建并推送标签（示例）：
 
    ```powershell
-   cd "d:\第一个系统\cursor-openclaw-wps-ppt"
+   cd "<仓库根目录>"
    git add -A
    git commit -m "release: CO-WPSppt v1.6.0"
    git push

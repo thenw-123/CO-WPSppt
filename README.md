@@ -1,6 +1,10 @@
-# cursor-openclaw-wps-ppt
+# CO-WPSppt · cursor-openclaw-wps-ppt
 
-用 **OpenClaw Gateway** 调 PowerShell，经 **WPS 演示 COM（`Kwpp.Application`）** 直接驱动幻灯片：新建、加页、改字、插图、保存。Cursor 侧通过 **Rule + Skill** 约束 Agent 走 `openclaw_invoke`。
+[![Extension build](https://github.com/thenw-123/CO-WPSppt/actions/workflows/extension-build.yml/badge.svg)](https://github.com/thenw-123/CO-WPSppt/actions/workflows/extension-build.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+**CO-WPSppt** 是企业级可维护的 **WPS 演示自动化** 开源项目：通过 **PowerShell + COM（`Kwpp.Application`）** 从 JSON 规格生成幻灯片（`run-spec`），并可选接入 **OpenClaw Gateway** 与 **Cursor / VS Code 扩展**。  
+本仓库区分 **`specs/`**（轻量契约示例 + Schema）与 **`examples/`**（完整试跑稿与生成脚本），便于 CI、审计与二次开发。
 
 ## CO-WPSppt — Cursor / VS Code 扩展（`.vsix`）
 
@@ -36,7 +40,7 @@
 Gateway 只配 **一个** PowerShell 入口，用 `action` 区分行为：
 
 ```powershell
-cd 'd:\第一个系统\cursor-openclaw-wps-ppt'
+cd <仓库根目录>
 .\tools\wps_dispatch.ps1 -Action run-spec -ArgsJson '{"specPath":"specs/example-spec.json"}'
 ```
 
@@ -92,7 +96,7 @@ cd 'd:\第一个系统\cursor-openclaw-wps-ppt'
 ### 测试（L5）
 
 ```powershell
-cd 'd:\第一个系统\cursor-openclaw-wps-ppt'
+cd <仓库根目录>
 Invoke-Pester .\tests\Validation.Tests.ps1
 Invoke-Pester .\tests\UrlAsset.Tests.ps1
 ```
@@ -111,21 +115,25 @@ Invoke-Pester .\tests\UrlAsset.Tests.ps1
 | `ASSET_FETCH_DENIED` | `imageUrl` 违反策略或非法响应（SSRF/类型/大小等） |
 | `RUNTIME_ERROR` | 其他未分类错误 |
 
-## 目录
+## 仓库结构
 
 | 路径 | 说明 |
 |------|------|
-| `manifest.json` | 注册 `wps-ppt` 工具与各 `action` |
-| `tools/wps_dispatch.ps1` | **推荐**：`-Action` + `-ArgsJson` 统一调度 |
-| `tools/*.ps1` | 各 action 直调入口；stdout 一行 JSON |
-| `wps-driver/*.ps1` | COM 封装 + 润色（备注 / 议程 / 字体） |
-| `specs/` | `run-spec` 用的 JSON 与 Schema |
-| `specs/templates/` | 大纲 / 答辩骨架模板（L3） |
-| `themes/` | 可选 `.thmx` 主题目录（L2） |
-| `tests/` | Pester 校验测试（L5） |
-| `requirements-charts.txt` | PNG 图表：matplotlib 依赖 |
+| `manifest.json` | OpenClaw：`wps-ppt` 工具与各 `action` 注册 |
+| `tools/wps_dispatch.ps1` | **推荐入口**：`-Action` + `-ArgsJson` 统一调度 |
+| `tools/*.ps1` | 各 action 直调；stdout **一行 JSON** |
+| `wps-driver/*.ps1` | COM 封装、叙事版式、图表、安全拉图、校验 |
+| `specs/` | 轻量示例 JSON、[ppt-spec.schema.json](specs/ppt-spec.schema.json)、模板；见 [specs/README.md](specs/README.md) |
+| `examples/` | 完整演示稿、配套静态资源与生成脚本；见 [examples/README.md](examples/README.md) |
+| `releases/` | 可选：预构建 **`.vsix`** 与安装说明 |
+| `extension/` | **CO-WPSppt** Cursor/VS Code 扩展源码 |
+| `themes/` | 可选 `.thmx`（L2） |
+| `tests/` | Pester（L5） |
+| `docs/` | 发布与 MCP 说明；见 [docs/README.md](docs/README.md) |
+| `skills/drive-wps-ppt/SKILL.md` | Agent 操作约定 |
 | `.cursor/rules/wps-ppt-pipeline.mdc` | Cursor 规则 |
-| `skills/drive-wps-ppt/SKILL.md` | 操作流程 |
+| `requirements-charts.txt` | PNG 图表 Python 依赖 |
+| `CONTRIBUTING.md` / `SECURITY.md` / `CHANGELOG.md` | 贡献、安全、变更记录 |
 
 ## 环境要求
 
@@ -144,7 +152,7 @@ Get-CimInstance Win32_ClassicCOMClassSetting |
 在项目根目录执行（将路径换成你的机器上的实际根目录）。**优先在同一 PowerShell 会话里用点调用**，避免再套一层 `powershell.exe` 时引号把 JSON 弄坏：
 
 ```powershell
-cd 'd:\第一个系统\cursor-openclaw-wps-ppt'
+cd <仓库根目录>
 .\tools\wps_run_spec.ps1 -ArgsJson '{"specPath":"specs/example-spec.json"}'
 ```
 
@@ -187,4 +195,4 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\wps_new.ps1 -ArgsJso
 
 ## 许可
 
-按你的主仓库策略自行添加；本骨架未默认附带许可证文件。
+本项目以 **[MIT License](LICENSE)** 授权；扩展子目录另有 [extension/LICENSE](extension/LICENSE)（内容一致时可与根目录保持同步）。
