@@ -1,6 +1,6 @@
 # 用 Cursor MCP 调用 wps-ppt（OpenClaw Gateway）
 
-在 Cursor 里配置 **OpenClaw Gateway** 的 MCP 后，对话里可以让 Agent 走 **`openclaw_invoke`**，而不用手写本机 PowerShell（与 [CO-WPSppt 扩展](CO-WPSppt-GitHub发布.md) / 本地 `wps_dispatch.ps1` 并行）。
+**逻辑一句话**：MCP 把 `openclaw_invoke` 转到网关；网关按 [manifest.json](../manifest.json) 调本仓库的 **`wps_dispatch.ps1`**，后面与「本机直接跑脚本」完全相同（JSON spec → COM → `.pptx`）。与 [CO-WPSppt 扩展](CO-WPSppt-GitHub发布.md) 并行，只是入口不同。
 
 ## 1. MCP 工具（Gateway 提供）
 

@@ -3,8 +3,24 @@
 [![Extension build](https://github.com/thenw-123/CO-WPSppt/actions/workflows/extension-build.yml/badge.svg)](https://github.com/thenw-123/CO-WPSppt/actions/workflows/extension-build.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**CO-WPSppt** 是企业级可维护的 **WPS 演示自动化** 开源项目：通过 **PowerShell + COM（`Kwpp.Application`）** 从 JSON 规格生成幻灯片（`run-spec`），并可选接入 **OpenClaw Gateway** 与 **Cursor / VS Code 扩展**。  
-本仓库区分 **`specs/`**（轻量契约示例 + Schema）与 **`examples/`**（完整试跑稿与生成脚本），便于 CI、审计与二次开发。
+**CO-WPSppt**：用一份 **JSON 规格** 驱动 **PowerShell + WPS COM**，一次生成 `.pptx`。可选 **OpenClaw MCP** 或 **VS Code / Cursor 扩展** 调用，底层都是同一套 `tools/` + `wps-driver/`。
+
+## 核心逻辑（一张图）
+
+```mermaid
+flowchart LR
+  A[JSON spec] --> B[wps_dispatch.ps1]
+  B --> C[wps-driver COM]
+  C --> D[.pptx]
+```
+
+| 你怎么触发 | 实际发生的事 |
+|------------|----------------|
+| 本机 PowerShell | `.\tools\wps_dispatch.ps1 -Action <action> -ArgsJson '<json>'` |
+| **CO-WPSppt** 扩展 | 扩展调打包后的 `bundled/.../wps_dispatch.ps1`（仍要 Windows + WPS） |
+| **OpenClaw**（Cursor MCP） | `openclaw_invoke`：`tool` = `wps-ppt`，`action` + `args_json` 与上列一致 |
+
+`manifest.json` 把各 `action` 登记给网关；**`specs/`** = 小示例 + Schema，**`examples/`** = 完整大稿与素材。扩展与 MCP 只是壳，**最终都落到 `wps_dispatch.ps1`**（扩展内为打包副本）。细节见下文与 [docs/MCP-OpenClaw与wps-ppt.md](docs/MCP-OpenClaw与wps-ppt.md)。
 
 ## CO-WPSppt — Cursor / VS Code 扩展（`.vsix`）
 
@@ -33,22 +49,16 @@
 
 若上架 **VS Marketplace**，需单独注册 Publisher 并执行 `vsce publish`（与 GitHub 分发独立）。
 
-**说明**：扩展通过 `powershell.exe` 调用打包后的 `bundled/tools/wps_dispatch.ps1`；**仍需 Windows + WPS**。OpenClaw / MCP 仍可使用仓库根目录脚本，与扩展并行不冲突。
-
-## 更省心的一条龙（推荐）
-
-Gateway 只配 **一个** PowerShell 入口，用 `action` 区分行为：
+## 本机一条命令试跑
 
 ```powershell
 cd <仓库根目录>
 .\tools\wps_dispatch.ps1 -Action run-spec -ArgsJson '{"specPath":"specs/example-spec.json"}'
 ```
 
-`manifest.json` 里的 `preferredDispatch` 写了同样意图；细粒度脚本仍保留，便于你按环境拆开权限。
+### Cursor + OpenClaw MCP
 
-### 用 Cursor MCP（OpenClaw Gateway）
-
-若在 Cursor **Settings → MCP** 里已接入 OpenClaw Gateway，对话中可通过 **`openclaw_discover`** → **`openclaw_invoke`**（`tool`: **`wps-ppt`**，`action`: `run-spec` / `validate-spec` 等）调用，参数进 **`args_json`**。配置与排错见 **[docs/MCP-OpenClaw与wps-ppt.md](docs/MCP-OpenClaw与wps-ppt.md)**。若 `discover` 显示 0 个工具或没有 `wps-ppt`，需在网关侧注册本仓库的 `manifest.json`，或改用本机 `wps_dispatch.ps1` / **CO-WPSppt** 扩展。
+`openclaw_discover` → 确认有 **`wps-ppt`** → **`openclaw_invoke`**（`action` / `args_json` 同上）。排错与注册 `manifest.json` 见 **[docs/MCP-OpenClaw与wps-ppt.md](docs/MCP-OpenClaw与wps-ppt.md)**。
 
 ### 升级版 `run-spec` 能做什么
 
@@ -166,11 +176,7 @@ cd <仓库根目录>
 powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\wps_new.ps1 -ArgsJson '{"outPath":"output/manual.pptx"}'
 ```
 
-## OpenClaw 接入
-
-1. 把本仓库路径登记到 Gateway 的插件/工具搜索路径。
-2. 读取 [manifest.json](manifest.json)，将每个 `action` 映射为：在**项目根目录**执行对应 `tools/*.ps1`，并把 Cursor 侧的 `args_json` 传给 `-ArgsJson`（或写入环境变量 `OC_ARGS_JSON` 后调用无参封装，需自行二选一）。
-3. Cursor 里启用 [`.cursor/rules/wps-ppt-pipeline.mdc`](.cursor/rules/wps-ppt-pipeline.mdc)，Agent 按 [`skills/drive-wps-ppt/SKILL.md`](skills/drive-wps-ppt/SKILL.md) 调用 `openclaw_invoke`。
+网关侧：把本仓库加入工具搜索路径并加载 [manifest.json](manifest.json)；Cursor 里可开 [`.cursor/rules/wps-ppt-pipeline.mdc`](.cursor/rules/wps-ppt-pipeline.mdc)，Agent 按 [`skills/drive-wps-ppt/SKILL.md`](skills/drive-wps-ppt/SKILL.md) 调 `openclaw_invoke`。
 
 ## 会话与状态
 
@@ -186,12 +192,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\wps_new.ps1 -ArgsJso
 | 自动化无反应 | WPS 弹窗拦截、安全中心禁止宏/COM；尝试信任本机脚本目录 |
 | 保存失败 | 无写权限、`output/` 不存在（脚本会自动建目录） |
 
-## Roadmap
+## Roadmap（摘要）
 
-- **图表**：PNG（matplotlib）+ **COM 内嵌（best-effort）**。
-- **配图**：**`imageUrl`**（SSRF 加固）+ 本地 **`image`**。
-- **主题**：`themes/` + `.thmx`；可选 COM 自动套色。
-- 动画、更稳的母版占位符（多语言）、会话 `attach` 等。
+图表 PNG / COM、远程 `imageUrl`、主题 `.thmx`；长期：动画、母版占位符、会话 `attach` 等。
 
 ## 许可
 

@@ -15,6 +15,7 @@
 - 完整演示稿与试跑素材迁入 `examples/`（`decks/`、`assets/`、`scripts/`），与 `specs/` 中轻量契约示例分离。
 - README 与《GitHub 发布》文档中的本地路径改为 `<仓库根目录>` 占位符；补充 `logs/.gitkeep` 以便忽略下的会话日志仍保留目录结构。
 - MIT 版权声明与扩展 `author` 字段统一为 **then_132423@qq.com**（根目录与 `extension/LICENSE` 一致）；`SECURITY.md` 补充同邮箱的私下报告渠道。
+- README / MCP 文档 / Cursor 规则：收紧「项目怎么转」的表述（流程图 + 表），减少与扩展/MCP 重复的段落。
 
 ## [1.5.x] 及更早
 

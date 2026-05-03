@@ -5,19 +5,18 @@ alwaysApply: false
 
 # WPS 演示自动化（OpenClaw + COM）
 
-当用户提到 **PPT、演示、幻灯片、汇报、deck、WPS、Kwpp** 等，优先按下面流程，而不是手写 python-pptx 或纯 Markdown 假装成幻灯片。
+用户要做 **PPT / 演示 / WPS 汇报** 时：走 **JSON spec → `wps_dispatch` → COM**，不要默认 python-pptx 或 Markdown 假装幻灯片。整体数据流见仓库 [README.md](../README.md) 里的 **「核心逻辑」**。
 
 ## 项目位置
 
-仓库根目录：`cursor-openclaw-wps-ppt`（与 `manifest.json`、`tools/` 同级）。
+仓库根（与 `manifest.json`、`tools/` 同级）。
 
 ## Cursor 侧
 
-1. 读技能说明：[skills/drive-wps-ppt/SKILL.md](skills/drive-wps-ppt/SKILL.md)。**答辩 / 项目汇报** 还须遵守 Skill 内的「答辩内容生成器」「两阶段生成」「视觉 QC」。
-2. **若已连接 OpenClaw Gateway MCP**：先 `openclaw_discover` 确认是否列出 **`wps-ppt`**；再 `openclaw_skill`（`tool`: `wps-ppt`）或读 manifest；调用时用 **`openclaw_invoke`**（`tool` + `action` + `args_json`）。详见 [docs/MCP-OpenClaw与wps-ppt.md](docs/MCP-OpenClaw与wps-ppt.md)。若 discover 为 0 或未注册 `wps-ppt`，须在网关侧加载本仓库 [manifest.json](manifest.json)，或改走本机脚本。
-3. 不用 MCP 时：用 **OpenClaw Gateway** 的 `openclaw_invoke`（非 MCP 路由）或 [tools/wps_dispatch.ps1](tools/wps_dispatch.ps1)：`action` 映射到 `-Action`，其余 JSON 进 `-ArgsJson`。
-4. 一次成稿优先：`run-spec`，`args_json` 里给 `specPath`（如 `specs/example-spec.json`）或内联 `spec`；升级版 spec 支持 `notes`、`autoAgenda`、`theme` 字体/`themePath`，以及叙事版式 **`timeline` / `comparison` / `thesis-chain` / `argument` / `thesis-vertical` / `swot`**（见 `specs/narrative-layouts-demo.json`）。`run-spec` **默认校验** spec；大稿可先 `validate-spec`；异常用 `doctor`（见 README）。
-5. 需要用户边看边改时：按 `new` → `add-slide` / `set-text` / `set-notes` → `save` 顺序多次调用。
+1. [skills/drive-wps-ppt/SKILL.md](skills/drive-wps-ppt/SKILL.md)；答辩类还须 Skill 里的生成与视觉 QC 约定。
+2. **已接 Gateway MCP**：`openclaw_discover` 有 **`wps-ppt`** → `openclaw_invoke`（`action` + `args_json`）。无工具则网关加载 [manifest.json](manifest.json)，或改 [tools/wps_dispatch.ps1](tools/wps_dispatch.ps1)。详见 [docs/MCP-OpenClaw与wps-ppt.md](docs/MCP-OpenClaw与wps-ppt.md)。
+3. 成稿优先 **`run-spec`**（`specPath` 或内联 `spec`）；叙事版式见 `specs/narrative-layouts-demo.json`。默认校验；大稿可先 `validate-spec`；环境用 `doctor`。
+4. 边做边改：`new` → `add-slide` / `set-text` / `set-notes` → `save`。
 
 ## 参数约定
 
