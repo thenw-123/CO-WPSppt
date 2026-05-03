@@ -55,10 +55,26 @@ npm run vscode:package
 
 **权限**：工作流使用仓库默认 `GITHUB_TOKEN` 创建 Release；若你关闭了 Actions 写权限，需在仓库 **Settings → Actions → General** 中允许工作流读写内容。
 
-## 四、CI 仅验证构建（不上传 Release）
+## 四、方式 B（手动发版）在 MCP 下的实际做法
+
+当前 Cursor 自带的 **GitHub MCP 没有「创建 Release / 上传 Release 附件」接口**，也无法单次提交约 100KB 的二进制 VSIX（`create_or_update_file` 内容长度受限）。
+
+推荐等价做法（效果与 Release 挂附件相同：浏览器直链下载）：
+
+1. 本地 `extension` 目录执行 `npm run vscode:package`。
+2. 将 **`co-wpsppt-<version>.vsix`** 复制到仓库 **`releases/`** 目录。
+3. 用 MCP **`create_or_update_file`** 更新 **`releases/README.md`**（安装说明 + 直链），其余用 **`git add` / `git push`** 提交 VSIX（本仓库已按此流程发布 **v1.6.0**）。
+
+**直链示例（请将版本号与分支名按实际修改）：**
+
+`https://github.com/thenw-123/CO-WPSppt/raw/main/releases/co-wpsppt-1.6.0.vsix`
+
+网页 **Releases** 里手动拖 VSIX 仍可选用，与 `releases/` 目录二选一或并存均可。
+
+## 五、CI 仅验证构建（不上传 Release）
 
 推送/PR 修改 `extension/`、`tools/`、`wps-driver/` 等路径时，**Extension build** 工作流会构建 VSIX 并上传为 **Artifact**（供下载检查，不自动发 Release）。
 
-## 五、与 VS Marketplace 的区别
+## 六、与 VS Marketplace 的区别
 
 本文档描述的是 **GitHub Releases 分发 .vsix**。若还要上架 **Visual Studio Marketplace**，需单独注册 Publisher、改 `publisher` 字段并执行 `npx vsce publish`（见 [官方文档](https://code.visualstudio.com/api/working-with-extensions/publishing-extension)）。
