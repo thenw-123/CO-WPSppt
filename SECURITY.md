@@ -9,7 +9,7 @@
 若你认为发现**可利用的安全问题**（尤其是远程代码执行、凭据窃取、SSRF 绕过 `imageUrl` 策略等），请：
 
 1. **不要**在公开 Issue 中披露利用细节；或
-2. 在 GitHub 使用 **Private vulnerability report**（若仓库已开启），或向维护者发送私信说明影响范围与复现思路。
+2. 在 GitHub 使用 **Private vulnerability report**（若仓库已开启），或发邮件至 **then_132423@qq.com** 说明影响范围与复现思路。
 
 我们会在合理时间内确认并修复；公开披露前会协调修复版本与说明。
 

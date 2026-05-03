@@ -195,4 +195,4 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\wps_new.ps1 -ArgsJso
 
 ## 许可
 
-本项目以 **[MIT License](LICENSE)** 授权；扩展子目录另有 [extension/LICENSE](extension/LICENSE)（内容一致时可与根目录保持同步）。
+本项目以 **[MIT License](LICENSE)** 授权，版权所有 © 2026 **then_132423@qq.com**。扩展子目录的 [extension/LICENSE](extension/LICENSE) 与根目录保持一致。

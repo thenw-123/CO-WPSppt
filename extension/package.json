@@ -4,6 +4,7 @@
   "description": "CO-WPSppt — WPS 演示 COM 自动化：run-spec、校验、doctor、图表与安全 imageUrl。Cursor / VS Code，Windows + PowerShell。",
   "version": "1.6.0",
   "publisher": "co-wpsppt",
+  "author": "then_132423@qq.com",
   "license": "MIT",
   "engines": {
     "vscode": "^1.82.0"
