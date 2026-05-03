@@ -1,0 +1,52 @@
+{
+  "title": "OpenClaw + WPS 示例稿",
+  "savePath": "output/example-openclaw-wps.pptx",
+  "autoAgenda": true,
+  "agendaTitle": "议程",
+  "theme": {
+    "titleFont": "Microsoft YaHei",
+    "bodyFont": "Microsoft YaHei"
+  },
+  "slides": [
+    {
+      "layout": "title",
+      "title": "Cursor × OpenClaw × WPS",
+      "subtitle": "COM 直驱演示 · 更省心的一稿成型"
+    },
+    {
+      "layout": "title-content",
+      "title": "这条链路在干什么",
+      "notes": "口播建议：30 秒内讲完四层结构，强调「看得见 WPS 在动」。",
+      "bullets": [
+        "Cursor 里用自然语言描述幻灯片",
+        "Agent 读 Rule + Skill，调用 openclaw_invoke",
+        "Gateway 一条路由走 wps_dispatch.ps1 也行",
+        "Kwpp.Application COM 实时改 WPS 窗口里的幻灯片"
+      ]
+    },
+    {
+      "layout": "section",
+      "title": "MVP 能力",
+      "subtitle": "本仓库已实现 + 升级版"
+    },
+    {
+      "layout": "title-content",
+      "title": "Actions 一览",
+      "bullets": [
+        "dispatch：一个脚本吃遍所有 action",
+        "run-spec：备注 / 自动目录 / 主题字体",
+        "set-notes：单独改演讲者备注",
+        "exec 仍只信项目内 .ps1"
+      ]
+    },
+    {
+      "layout": "title-content",
+      "title": "收尾",
+      "bullets": [
+        "设 OC_PRETTY_JSON=1 可读 JSON 日志",
+        "output/ 落盘，logs/wps-session.json 记当前稿",
+        "细粒度改稿：new → set-text / set-notes → save"
+      ]
+    }
+  ]
+}

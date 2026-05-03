@@ -1,0 +1,107 @@
+{
+  "name": "co-wpsppt",
+  "displayName": "CO-WPSppt",
+  "description": "CO-WPSppt — WPS 演示 COM 自动化：run-spec、校验、doctor、图表与安全 imageUrl。Cursor / VS Code，Windows + PowerShell。",
+  "version": "1.6.0",
+  "publisher": "co-wpsppt",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.82.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "CO-WPSppt",
+    "wps",
+    "ppt",
+    "presentation",
+    "openclaw",
+    "com",
+    "powerpoint",
+    "幻灯片"
+  ],
+  "activationEvents": [
+    "onCommand:wpsPpt.doctor",
+    "onCommand:wpsPpt.validateSpec",
+    "onCommand:wpsPpt.runSpec",
+    "onCommand:wpsPpt.runSpecExample",
+    "onCommand:wpsPpt.openManifest",
+    "onCommand:wpsPpt.openSkill",
+    "onCommand:wpsPpt.openBundledSpecs"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "wpsPpt.doctor",
+        "title": "CO-WPSppt: Doctor（环境检查）"
+      },
+      {
+        "command": "wpsPpt.validateSpec",
+        "title": "CO-WPSppt: 校验 spec JSON…"
+      },
+      {
+        "command": "wpsPpt.runSpec",
+        "title": "CO-WPSppt: Run spec（生成演示稿）…"
+      },
+      {
+        "command": "wpsPpt.runSpecExample",
+        "title": "CO-WPSppt: 运行示例 spec（打包内置）"
+      },
+      {
+        "command": "wpsPpt.openManifest",
+        "title": "CO-WPSppt: 打开打包内的 manifest.json"
+      },
+      {
+        "command": "wpsPpt.openSkill",
+        "title": "CO-WPSppt: 打开 Skill（drive-wps-ppt）"
+      },
+      {
+        "command": "wpsPpt.openBundledSpecs",
+        "title": "CO-WPSppt: 打开打包内的 specs 文件夹"
+      }
+    ],
+    "configuration": {
+      "title": "CO-WPSppt",
+      "properties": {
+        "wpsPpt.powershellExecutable": {
+          "type": "string",
+          "default": "powershell.exe",
+          "description": "PowerShell used to run wps_dispatch.ps1 (Windows: powershell.exe or pwsh.exe)."
+        },
+        "wpsPpt.executionPolicy": {
+          "type": "string",
+          "default": "Bypass",
+          "description": "-ExecutionPolicy value passed to PowerShell."
+        },
+        "wpsPpt.prettyJson": {
+          "type": "boolean",
+          "default": false,
+          "description": "Set OC_PRETTY_JSON=1 for readable script stdout."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile && node ../scripts/copy-bundled.mjs",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "bundle": "node ../scripts/copy-bundled.mjs",
+    "vscode:package": "npm run vscode:prepublish && vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.82.0",
+    "@vscode/vsce": "^2.22.0",
+    "typescript": "^5.3.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thenw-123/CO-WPSppt.git"
+  },
+  "bugs": {
+    "url": "https://github.com/thenw-123/CO-WPSppt/issues"
+  },
+  "homepage": "https://github.com/thenw-123/CO-WPSppt#readme"
+}

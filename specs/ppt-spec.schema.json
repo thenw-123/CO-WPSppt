@@ -1,0 +1,347 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "WPS-PPT deck spec",
+  "description": "Spec version aligns with manifest wps-ppt 1.6.x (narrative + thesis-vertical + swot)",
+  "type": "object",
+  "required": ["slides"],
+  "properties": {
+    "assetFetch": {
+      "type": "object",
+      "description": "Security policy for slides[].imageUrl downloads",
+      "properties": {
+        "allowedHosts": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "If non-empty, only these hostnames (exact match) may be fetched"
+        },
+        "maxBytes": { "type": "integer", "description": "Max response body size (cap 25MB)" },
+        "timeoutSec": { "type": "integer" },
+        "maxRedirects": { "type": "integer" },
+        "softFail": {
+          "type": "boolean",
+          "description": "If true, imageUrl errors are logged only; deck still saves"
+        }
+      }
+    },
+    "title": { "type": "string", "description": "Optional deck title (reserved for future metadata)" },
+    "savePath": {
+      "type": "string",
+      "description": "Relative to project root or absolute .pptx path"
+    },
+    "autoAgenda": {
+      "type": "boolean",
+      "description": "After all slides are built, insert a 目录 slide at index 2 using later slide titles"
+    },
+    "agendaTitle": { "type": "string", "description": "Title for auto agenda slide (default 目录)" },
+    "theme": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Advisory label for generators" },
+        "themePath": {
+          "type": "string",
+          "description": ".thmx or theme path WPS accepts (optional)"
+        },
+        "font": {
+          "type": "string",
+          "description": "Shorthand: applies to title+body when titleFont/bodyFont omitted (e.g. 微软雅黑 / Microsoft YaHei)"
+        },
+        "titleFont": { "type": "string" },
+        "bodyFont": { "type": "string" },
+        "colors": {
+          "type": "object",
+          "description": "Advisory palette for Agent/designer; COM pipeline does not apply hex colors automatically",
+          "properties": {
+            "primary": { "type": "string" },
+            "secondary": { "type": "string" },
+            "accent": { "type": "string" }
+          }
+        },
+        "defaultSlideBackground": {
+          "type": "string",
+          "description": "Optional #RRGGBB applied when a slide omits background"
+        },
+        "defaultTitleColor": {
+          "type": "string",
+          "description": "Optional #RRGGBB for title when slide omits titleColor"
+        },
+        "defaultBodyColor": {
+          "type": "string",
+          "description": "Optional #RRGGBB for body/subtitle when slide omits bodyColor"
+        },
+        "agendaBackground": { "type": "string", "description": "Directory slide background #RRGGBB" },
+        "agendaTitleColor": { "type": "string" },
+        "agendaBodyColor": { "type": "string" },
+        "agendaAccentColor": { "type": "string", "description": "Vertical accent bar on directory slide #RRGGBB" },
+        "agendaTwoColumn": { "type": "boolean", "description": "Use two-column directory layout when supported" },
+        "agendaNumbered": { "type": "boolean", "description": "Prefix directory lines with 01. 02. …" },
+        "agendaTitleSize": { "type": "number" },
+        "agendaBodySize": { "type": "number" },
+        "defaultTransition": {
+          "type": "string",
+          "description": "Slide transition: fade, push, wipe, cut, uncover, none"
+        },
+        "defaultTransitionDuration": { "type": "number" },
+        "defaultAnimateBuild": {
+          "type": "boolean",
+          "description": "Paragraph-by-paragraph entrance on body (best-effort COM)"
+        }
+      }
+    },
+    "slides": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["layout"],
+        "properties": {
+          "layout": {
+            "type": "string",
+            "enum": [
+              "title",
+              "title-content",
+              "content",
+              "chart",
+              "section",
+              "two-content",
+              "blank",
+              "timeline",
+              "comparison",
+              "thesis-chain",
+              "argument",
+              "thesis-vertical",
+              "swot"
+            ],
+            "description": "Narrative layouts use blank slide + shapes; mutually exclusive with twoColumns and chart_data"
+          },
+          "timeline": {
+            "type": "array",
+            "description": "layout timeline: milestones with mark|year + text|caption",
+            "items": {
+              "type": "object",
+              "properties": {
+                "mark": { "type": "string" },
+                "year": { "type": "string" },
+                "text": { "type": "string" },
+                "caption": { "type": "string" }
+              }
+            }
+          },
+          "comparison": {
+            "type": "object",
+            "description": "layout comparison: dual-header table",
+            "properties": {
+              "leftHeader": { "type": "string" },
+              "rightHeader": { "type": "string" },
+              "rows": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "left": { "type": "string" },
+                    "right": { "type": "string" }
+                  },
+                  "required": ["left", "right"]
+                }
+              }
+            }
+          },
+          "chain": {
+            "type": "array",
+            "description": "layout thesis-chain: horizontal causal cards (min 2)",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": { "type": "string" },
+                "text": { "type": "string" }
+              }
+            }
+          },
+          "argument": {
+            "type": "object",
+            "description": "layout argument: thesis → 因为 → bullets → 因此 → conclusion",
+            "properties": {
+              "thesis": { "type": "string" },
+              "because": { "type": "array", "items": { "type": "string" } },
+              "therefore": { "type": "string" }
+            }
+          },
+          "thesisVertical": {
+            "type": "object",
+            "description": "layout thesis-vertical: one claim + exactly 3 vertical steps (labels optional)",
+            "properties": {
+              "claim": { "type": "string" },
+              "thesis": { "type": "string", "description": "Alias for claim" },
+              "steps": {
+                "type": "array",
+                "minItems": 3,
+                "maxItems": 3,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "label": { "type": "string" },
+                    "text": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "swot": {
+            "type": "object",
+            "description": "layout swot: 2×2 quadrants S/W/O/T; each body string or string[]",
+            "properties": {
+              "strengths": {
+                "anyOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }]
+              },
+              "weaknesses": {
+                "anyOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }]
+              },
+              "opportunities": {
+                "anyOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }]
+              },
+              "threats": {
+                "anyOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }]
+              },
+              "headers": {
+                "type": "object",
+                "description": "Optional quadrant titles",
+                "properties": {
+                  "strengths": { "type": "string" },
+                  "weaknesses": { "type": "string" },
+                  "opportunities": { "type": "string" },
+                  "threats": { "type": "string" }
+                }
+              }
+            },
+            "required": ["strengths", "weaknesses", "opportunities", "threats"]
+          },
+          "title": { "type": "string" },
+          "subtitle": { "type": "string" },
+          "twoColumns": {
+            "type": "object",
+            "description": "Dual text columns (forces two-content layout). Headings optional.",
+            "properties": {
+              "leftHeading": { "type": "string" },
+              "rightHeading": { "type": "string" },
+              "leftBullets": { "type": "array", "items": { "type": "string" } },
+              "rightBullets": { "type": "array", "items": { "type": "string" } }
+            }
+          },
+          "transition": {
+            "type": "string",
+            "description": "Per-slide transition; overrides theme default"
+          },
+          "transitionDuration": { "type": "number" },
+          "animateBuild": {
+            "type": "boolean",
+            "description": "Override theme defaultAnimateBuild for this slide"
+          },
+          "bullets": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "points": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Alias for bullets when generating from LLM; bullets wins if both set"
+          },
+          "chart_type": {
+            "type": "string",
+            "description": "bar | line | donut | flowchart; with chart_data, PNG uses bar|line|donut (default bar)"
+          },
+          "chart_render": {
+            "description": "If false or off/none, skip PNG even when chart_data present",
+            "anyOf": [
+              { "type": "boolean" },
+              { "type": "string" }
+            ]
+          },
+          "chart_engine": {
+            "type": "string",
+            "enum": ["png", "com"],
+            "description": "png: matplotlib PNG (default when omitted); com: WPS embedded chart (best-effort)"
+          },
+          "chart_fallback_png": {
+            "type": "boolean",
+            "description": "When chart_engine is com, if false do not fall back to PNG on COM failure"
+          },
+          "chart_data": {
+            "type": "object",
+            "description": "Chart series; PNG via Python or COM when chart_engine com",
+            "properties": {
+              "labels": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "series": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": { "type": "string" },
+                    "values": {
+                      "type": "array",
+                      "items": { "type": "number" }
+                    }
+                  },
+                  "required": ["values"]
+                }
+              }
+            },
+            "required": ["labels", "series"]
+          },
+          "data_summary": { "type": "string" },
+          "insight": { "type": "string" },
+          "notes": {
+            "type": "string",
+            "description": "Speaker notes for this slide"
+          },
+          "background": {
+            "type": "string",
+            "description": "Slide fill color #RRGGBB (COM); overrides theme defaultSlideBackground when set"
+          },
+          "titleColor": {
+            "type": "string",
+            "description": "Title text #RRGGBB; falls back to theme defaultTitleColor"
+          },
+          "bodyColor": {
+            "type": "string",
+            "description": "Body/subtitle text #RRGGBB; falls back to theme defaultBodyColor"
+          },
+          "imageLeft": { "type": "number", "description": "Picture left in points (optional)" },
+          "imageTop": { "type": "number" },
+          "imageWidth": { "type": "number" },
+          "imageHeight": { "type": "number" },
+          "imagePlacement": {
+            "type": "string",
+            "enum": ["right", "bottom"],
+            "description": "right: portrait in right column (body narrowed); bottom: wide strip under text"
+          },
+          "imageReservedRight": {
+            "type": "number",
+            "description": "Points reserved on right when imagePlacement is right (default ~408)"
+          },
+          "bodyBottomLimit": {
+            "type": "number",
+            "description": "Max Y for body text bottom when imagePlacement is bottom"
+          },
+          "imageCommons": {
+            "type": "string",
+            "description": "Wikimedia Commons file name (e.g. The School of Athens.jpg); run-spec downloads 500px thumb via API"
+          },
+          "commonsThumbWidth": {
+            "type": "integer",
+            "description": "Thumbnail width; must be a production step (20,40,60,120,250,330,500,960,...)"
+          },
+          "image": {
+            "type": "string",
+            "description": "Relative or absolute path to image file (mutually exclusive with imageUrl)"
+          },
+          "imageUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "HTTPS URL to fetch image (png/jpeg/gif/webp); SSRF-hardened — see README 安全"
+          }
+        }
+      }
+    }
+  }
+}

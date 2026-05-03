@@ -1,0 +1,109 @@
+{
+  "savePath": "output/narrative-layouts-demo.pptx",
+  "theme": {
+    "titleFont": "华文中宋",
+    "bodyFont": "微软雅黑",
+    "defaultSlideBackground": "#F8FAFC",
+    "defaultTitleColor": "#0F172A",
+    "defaultBodyColor": "#334155",
+    "defaultTransition": "fade",
+    "defaultAnimateBuild": true
+  },
+  "slides": [
+    {
+      "layout": "title",
+      "title": "叙事版式示例",
+      "subtitle": "时间轴 · 对照 · 因果链 · 论证 · 竖向三步 · SWOT",
+      "notes": "演示六种 narrative layout + SWOT；对齐「结构轮换」思路。"
+    },
+    {
+      "layout": "timeline",
+      "title": "问题如何被推进",
+      "timeline": [
+        { "mark": "困惑", "text": "现象与反常：旧框架解释不了新数据。" },
+        { "mark": "命题", "text": "提出可检验命题：若 A 则应在 B 处观测到信号。" },
+        { "mark": "验证", "text": "对照实验 / 统计：信号出现，替代假说被削弱。" },
+        { "mark": "结论", "text": "收束为可行动判断：下一步优先做 X。" }
+      ],
+      "notes": "时间轴适合「故事推进」而非简单罗列。"
+    },
+    {
+      "layout": "comparison",
+      "title": "两种读法对照",
+      "comparison": {
+        "leftHeader": "并列要点",
+        "rightHeader": "论证结构",
+        "rows": [
+          {
+            "left": "信息密度高，但关系不清",
+            "right": "显式连接词：因为 / 所以 / 例如"
+          },
+          {
+            "left": "听众自行脑补逻辑",
+            "right": "每页一条推理链，版式随链变化"
+          },
+          {
+            "left": "易像素材拼贴",
+            "right": "先立场，再证据，再推论"
+          }
+        ]
+      },
+      "notes": "对照表适合「立场/方法/结果」并排辨析。"
+    },
+    {
+      "layout": "thesis-chain",
+      "title": "因果链（横向）",
+      "chain": [
+        { "label": "因", "text": "约束改变 → 行为激励变化" },
+        { "label": "机制", "text": "关键中介变量可观测" },
+        { "label": "果", "text": "指标在窗口期内显著移动" },
+        { "label": "含义", "text": "策略可复现，而非单次噪声" }
+      ],
+      "notes": "因果链适合机制解释；最多展示 4 卡。"
+    },
+    {
+      "layout": "argument",
+      "title": "一页论证（总—分—收）",
+      "argument": {
+        "thesis": "要用版式服务推理：版式重复 = 叙事重复。",
+        "because": [
+          "听众 working memory 有限，需要「路标」",
+          "连接词降低误读与追问成本",
+          "对照/时间轴/链式结构对应不同认知任务"
+        ],
+        "therefore": "同一配色下，仍应轮换信息结构，而不是只换文案。"
+      },
+      "notes": "论证页适合收束章节的「一页一论题」。"
+    },
+    {
+      "layout": "thesis-vertical",
+      "title": "第三节｜可行性（一页一论题）",
+      "thesisVertical": {
+        "claim": "在现有约束下，方案可在 90 天内落地到可观测指标，而不是停留在概念验证。",
+        "steps": [
+          { "label": "界定范围", "text": "锁定资源边界：人力、预算、合规与数据可用性。" },
+          { "label": "关键证据", "text": "试点数据：延迟、差错率、回滚成本；与基线对照。" },
+          { "label": "可执行结论", "text": "先扩一条产线/一个区域，达标后再复制；失败条件写清。" }
+        ]
+      },
+      "notes": "竖向三步：同一页只推进一条主命题，降低「并列堆砌」感。"
+    },
+    {
+      "layout": "swot",
+      "title": "态势研判（SWOT）",
+      "swot": {
+        "headers": {
+          "strengths": "S 优势",
+          "weaknesses": "W 劣势",
+          "opportunities": "O 机会",
+          "threats": "T 威胁"
+        },
+        "strengths": ["团队已掌握核心链路", "与业务方共创过一轮试点"],
+        "weaknesses": ["关键数据口径尚未统一", "高峰期仍依赖人工兜底"],
+        "opportunities": ["政策/标准推动数字化", "可复用模块降边际成本"],
+        "threats": ["供应商切换窗口短", "竞品同类功能价格战"]
+      },
+      "notes": "四象限适合战略/复盘章；可与 timeline、argument 交替出现。"
+    }
+  ]
+}

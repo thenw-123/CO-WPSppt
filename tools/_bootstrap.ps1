@@ -1,0 +1,11 @@
+# Dot-source all wps-driver modules (same order for every tool)
+$BootstrapToolsDir = $PSScriptRoot
+$BootstrapProjectRoot = Resolve-Path (Join-Path $BootstrapToolsDir '..')
+. (Join-Path $BootstrapProjectRoot 'wps-driver\Wps.Common.ps1')
+. (Join-Path $BootstrapProjectRoot 'wps-driver\Wps.Connect.ps1')
+. (Join-Path $BootstrapProjectRoot 'wps-driver\Wps.Presentation.ps1')
+. (Join-Path $BootstrapProjectRoot 'wps-driver\Wps.Slide.ps1')
+. (Join-Path $BootstrapProjectRoot 'wps-driver\Wps.Text.ps1')
+. (Join-Path $BootstrapProjectRoot 'wps-driver\Wps.Image.ps1')
+. (Join-Path $BootstrapProjectRoot 'wps-driver\Wps.Polish.ps1')
+. (Join-Path $BootstrapProjectRoot 'wps-driver\Wps.LayoutNarrative.ps1')

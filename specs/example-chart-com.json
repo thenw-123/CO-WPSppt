@@ -1,0 +1,29 @@
+{
+  "title": "COM 内嵌图表示例（二期）",
+  "savePath": "output/example-chart-com.pptx",
+  "theme": {
+    "font": "Microsoft YaHei"
+  },
+  "slides": [
+    {
+      "layout": "title",
+      "title": "COM 图表",
+      "subtitle": "依赖 WPS 版本",
+      "notes": "失败时可改 chart_engine 为 png 或省略以用 matplotlib"
+    },
+    {
+      "layout": "chart",
+      "title": "产能对比",
+      "chart_engine": "com",
+      "chart_type": "bar",
+      "chart_fallback_png": true,
+      "data_summary": "同仓峰值件/小时",
+      "insight": "算法通道更高",
+      "chart_data": {
+        "labels": ["人工", "算法"],
+        "series": [{ "name": "产能", "values": [120, 168] }]
+      },
+      "notes": "若 AddChart 不可用，自动尝试 PNG（需 Python+matplotlib）。"
+    }
+  ]
+}

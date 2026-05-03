@@ -1,0 +1,31 @@
+{
+  "title": "PNG 图表示例",
+  "savePath": "output/example-chart-png.pptx",
+  "autoAgenda": false,
+  "theme": {
+    "titleFont": "Microsoft YaHei",
+    "bodyFont": "Microsoft YaHei"
+  },
+  "slides": [
+    {
+      "layout": "title",
+      "title": "PNG 图表演示",
+      "subtitle": "Python 渲染插入 WPS",
+      "notes": "说明需安装 Python3 与 matplotlib，见 requirements-charts.txt"
+    },
+    {
+      "layout": "chart",
+      "title": "效率对比",
+      "chart_type": "bar",
+      "data_summary": "人工 vs 算法（件/小时）",
+      "insight": "算法通道提升约 40%",
+      "chart_data": {
+        "labels": ["人工", "算法"],
+        "series": [
+          { "name": "峰值产能", "values": [120, 168] }
+        ]
+      },
+      "notes": "柱状图来自 matplotlib；无 Python 时仅显示文字要点。"
+    }
+  ]
+}

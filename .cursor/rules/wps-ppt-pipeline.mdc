@@ -1,0 +1,30 @@
+---
+description: 用户要做 PPT / 演示稿 / 幻灯片 / WPS 汇报时，走 OpenClaw wps-ppt 工具（COM 直驱 WPS）
+alwaysApply: false
+---
+
+# WPS 演示自动化（OpenClaw + COM）
+
+当用户提到 **PPT、演示、幻灯片、汇报、deck、WPS、Kwpp** 等，优先按下面流程，而不是手写 python-pptx 或纯 Markdown 假装成幻灯片。
+
+## 项目位置
+
+仓库根目录：`cursor-openclaw-wps-ppt`（与 `manifest.json`、`tools/` 同级）。
+
+## Cursor 侧
+
+1. 读技能说明：[skills/drive-wps-ppt/SKILL.md](skills/drive-wps-ppt/SKILL.md)。**答辩 / 项目汇报** 还须遵守 Skill 内的「答辩内容生成器」「两阶段生成」「视觉 QC」。
+2. **若已连接 OpenClaw Gateway MCP**：先 `openclaw_discover` 确认是否列出 **`wps-ppt`**；再 `openclaw_skill`（`tool`: `wps-ppt`）或读 manifest；调用时用 **`openclaw_invoke`**（`tool` + `action` + `args_json`）。详见 [docs/MCP-OpenClaw与wps-ppt.md](docs/MCP-OpenClaw与wps-ppt.md)。若 discover 为 0 或未注册 `wps-ppt`，须在网关侧加载本仓库 [manifest.json](manifest.json)，或改走本机脚本。
+3. 不用 MCP 时：用 **OpenClaw Gateway** 的 `openclaw_invoke`（非 MCP 路由）或 [tools/wps_dispatch.ps1](tools/wps_dispatch.ps1)：`action` 映射到 `-Action`，其余 JSON 进 `-ArgsJson`。
+4. 一次成稿优先：`run-spec`，`args_json` 里给 `specPath`（如 `specs/example-spec.json`）或内联 `spec`；升级版 spec 支持 `notes`、`autoAgenda`、`theme` 字体/`themePath`，以及叙事版式 **`timeline` / `comparison` / `thesis-chain` / `argument` / `thesis-vertical` / `swot`**（见 `specs/narrative-layouts-demo.json`）。`run-spec` **默认校验** spec；大稿可先 `validate-spec`；异常用 `doctor`（见 README）。
+5. 需要用户边看边改时：按 `new` → `add-slide` / `set-text` / `set-notes` → `save` 顺序多次调用。
+
+## 参数约定
+
+- 所有脚本从 stdout 输出一行 JSON：`{"ok":true,"data":{...}}` 或 `{"ok":false,"error":"...","code":"..."}`；失败时若有 `data.errors`（校验）一并交给用户。
+- 可通过环境变量 `OC_ARGS_JSON` 传入与 `args_json` 相同的 JSON 字符串。
+- 会话文件：`logs/wps-session.json`（当前绑定的 `presentationPath`）。
+
+## 安全
+
+- 不要用 `exec` 跑不可信脚本；`exec` 仅允许项目内的 `.ps1` 路径。

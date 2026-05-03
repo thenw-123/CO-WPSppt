@@ -1,0 +1,190 @@
+# cursor-openclaw-wps-ppt
+
+用 **OpenClaw Gateway** 调 PowerShell，经 **WPS 演示 COM（`Kwpp.Application`）** 直接驱动幻灯片：新建、加页、改字、插图、保存。Cursor 侧通过 **Rule + Skill** 约束 Agent 走 `openclaw_invoke`。
+
+## CO-WPSppt — Cursor / VS Code 扩展（`.vsix`）
+
+本仓库包含可打包的扩展 **[extension/](extension/)**（显示名 **CO-WPSppt**，扩展 ID `co-wpsppt.co-wpsppt`）。
+
+### 本地打包安装
+
+1. 安装 Node.js 20+，在 `extension/` 下执行：
+   ```bash
+   cd extension
+   npm install
+   npm run vscode:package
+   ```
+2. 得到 **`co-wpsppt-<version>.vsix`**（在 `extension/` 目录下）。在 Cursor 中：**Extensions: Install from VSIX…** 选择该文件。
+3. 命令面板中搜索 **CO-WPSppt** 运行 Doctor、校验、Run spec 等（详见 [extension/README.md](extension/README.md)）。
+
+### 发布到 GitHub Releases（自动带 VSIX）
+
+1. 将 `extension/package.json` 里的 **`repository` / `bugs` / `homepage`** 改为你的 GitHub 仓库 URL。
+2. 推送代码后打标签并推送，例如 `v1.6.0`：
+   ```bash
+   git tag v1.6.0
+   git push origin v1.6.0
+   ```
+3. Actions 中的 **Release VSIX (CO-WPSppt)** 会构建扩展并把 `.vsix` 挂到对应 **Release** 上。详细说明见 **[docs/CO-WPSppt-GitHub发布.md](docs/CO-WPSppt-GitHub发布.md)**。
+
+若上架 **VS Marketplace**，需单独注册 Publisher 并执行 `vsce publish`（与 GitHub 分发独立）。
+
+**说明**：扩展通过 `powershell.exe` 调用打包后的 `bundled/tools/wps_dispatch.ps1`；**仍需 Windows + WPS**。OpenClaw / MCP 仍可使用仓库根目录脚本，与扩展并行不冲突。
+
+## 更省心的一条龙（推荐）
+
+Gateway 只配 **一个** PowerShell 入口，用 `action` 区分行为：
+
+```powershell
+cd 'd:\第一个系统\cursor-openclaw-wps-ppt'
+.\tools\wps_dispatch.ps1 -Action run-spec -ArgsJson '{"specPath":"specs/example-spec.json"}'
+```
+
+`manifest.json` 里的 `preferredDispatch` 写了同样意图；细粒度脚本仍保留，便于你按环境拆开权限。
+
+### 用 Cursor MCP（OpenClaw Gateway）
+
+若在 Cursor **Settings → MCP** 里已接入 OpenClaw Gateway，对话中可通过 **`openclaw_discover`** → **`openclaw_invoke`**（`tool`: **`wps-ppt`**，`action`: `run-spec` / `validate-spec` 等）调用，参数进 **`args_json`**。配置与排错见 **[docs/MCP-OpenClaw与wps-ppt.md](docs/MCP-OpenClaw与wps-ppt.md)**。若 `discover` 显示 0 个工具或没有 `wps-ppt`，需在网关侧注册本仓库的 `manifest.json`，或改用本机 `wps_dispatch.ps1` / **CO-WPSppt** 扩展。
+
+### 升级版 `run-spec` 能做什么
+
+- **演讲者备注**：每页可选 `notes`，也可事后 `set-notes`。
+- **自动目录**：`autoAgenda: true` 时在 **第 2 页**插入议程，条目来自后面各页标题。
+- **主题/字体**：`theme.titleFont` / `theme.bodyFont`（尽力套全文）；有 `.thmx` 可填 `theme.themePath`。
+- **叙事版式（1.5+）**：`layout` 可为 `timeline`、`comparison`、`thesis-chain`、`argument`、`thesis-vertical`（**一页一论题 · 竖向三步**）、`swot`（**四象限**）；在空白幻灯片上排形状以减轻版式重复；见 Schema 与 [specs/narrative-layouts-demo.json](specs/narrative-layouts-demo.json)。
+- **结构校验**：`run-spec` 默认先做 spec 校验（与 [specs/ppt-spec.schema.json](specs/ppt-spec.schema.json) 对齐）；`args_json` 里设 `skipValidation: true` 可跳过（不推荐）。
+- **validate-spec**：仅校验 JSON、不启动 WPS；失败时 `data.errors` 为字符串数组，`code` 为 `VALIDATION_FAILED`。
+- **doctor**：检查工程路径、`output/` 可写、会话文件、各 ProgID 是否注册；`{"comProbe":true}` 时会尝试 `Get-WpsApplication`（可能拉起 WPS）。
+- **可读输出**：调试时设环境变量 `OC_PRETTY_JSON=1`，stdout JSON 会换行缩进。
+
+### PNG 图表（L1，优先于 COM 内嵌图）
+
+- 在某一页提供 **`chart_data`**（`labels` + `series[].values`）且 **`chart_type`** 为 `bar` / `line` / `donut` 时，`run-spec` 会调用 **`tools/chart_to_png.py`**（matplotlib，无界面）生成 PNG，并插入该幻灯片。
+- **依赖**：Python 3 + `pip install -r requirements-charts.txt`。`doctor` 会回报 `chartPng.pythonAvailable` 与 `matplotlibImportOk`。
+- 无 Python 或渲染失败时：**不中断整稿**，仅保留文字要点；详见 [specs/example-chart-png.json](specs/example-chart-png.json)。
+- 设置 **`chart_render`: false**（或 `off`/`none`）可强制不生成 PNG。
+
+### 二期：COM 内嵌图 + 安全远程配图
+
+- **`chart_engine`: `"com"`**：用 WPS COM 内嵌 Excel 数据图（`bar`/`line`/`donut`），见 [wps-driver/Wps.ChartCom.ps1](wps-driver/Wps.ChartCom.ps1)。失败时若 **`chart_fallback_png`** 非 `false`，仍会尝试 matplotlib PNG。
+- **`chart_engine`** 省略或为 **`png`**：仅用 PNG 路径（与一期一致）。
+- **`imageUrl`**：按 [wps-driver/Wps.UrlAsset.ps1](wps-driver/Wps.UrlAsset.ps1) 拉取 **png / jpeg / gif / webp**（**不含 svg**，降低 XXE/脚本风险）。与 **`image`** 本地路径 **二选一**。
+- 示例：[specs/example-chart-com.json](specs/example-chart-com.json)、[specs/example-imageurl.json](specs/example-imageurl.json)。
+
+### 安全（`imageUrl` / SSRF）
+
+- **默认仅 HTTPS**；仅在开发环境可设 **`OC_ASSET_FETCH_ALLOW_HTTP=1`** 允许 HTTP（**勿在生产/不可信 spec** 使用）。`doctor` 会显示 `assetFetchInsecureHttpAllowed`。
+- **解析 DNS 后拒绝** 私网、回环、链路本地、CGNAT、`169.254/16` 等；拒绝 URL 中带 **用户名密码**；拒绝 **非 http(s)** 协议。
+- **重定向**：每一跳重新做同样检查，防止跳向内网。
+- **体积**：默认最大约 5MiB（`assetFetch.maxBytes` 可调，硬顶约 25MiB）。
+- **类型**：仅允许常见 `image/*`，与扩展名绑定写入磁盘。
+- **强烈建议** 在生产为 spec 配置 **`assetFetch.allowedHosts`**（主机名 **精确** 匹配，大小写不敏感），只放行自家 CDN/图床。
+- **`assetFetch.softFail`: true** 时拉取失败只记 Verbose、**不**中断整稿（默认 **false**，失败即中止，避免静默缺图）。
+
+### 主题目录（L2）
+
+- 将 **`.thmx`** 放入 [themes/](themes/)，spec 中 `theme.themePath` 写相对路径（见 [themes/README.md](themes/README.md)）。
+
+### 模板库（L3）
+
+- [specs/templates/](specs/templates/) 提供大纲与答辩骨架 JSON，见 [specs/templates/README.md](specs/templates/README.md)。
+
+### 测试（L5）
+
+```powershell
+cd 'd:\第一个系统\cursor-openclaw-wps-ppt'
+Invoke-Pester .\tests\Validation.Tests.ps1
+Invoke-Pester .\tests\UrlAsset.Tests.ps1
+```
+
+（仓库自带脚本兼容 **Pester 3.x**；若已装 Pester 5，同一命令亦可运行。）
+
+### 失败时 `code` 字段（便于 Agent 分流）
+
+| `code` | 含义 |
+|--------|------|
+| `VALIDATION_FAILED` | spec/JSON 或校验逻辑报错 |
+| `COM_UNAVAILABLE` | 无法创建 WPS COM |
+| `NO_SESSION` | 会话/路径相关（启发式匹配消息） |
+| `SAVE_DENIED` | 权限或拒绝访问 |
+| `UNKNOWN_ACTION` | `dispatch` 不认识 `action` |
+| `ASSET_FETCH_DENIED` | `imageUrl` 违反策略或非法响应（SSRF/类型/大小等） |
+| `RUNTIME_ERROR` | 其他未分类错误 |
+
+## 目录
+
+| 路径 | 说明 |
+|------|------|
+| `manifest.json` | 注册 `wps-ppt` 工具与各 `action` |
+| `tools/wps_dispatch.ps1` | **推荐**：`-Action` + `-ArgsJson` 统一调度 |
+| `tools/*.ps1` | 各 action 直调入口；stdout 一行 JSON |
+| `wps-driver/*.ps1` | COM 封装 + 润色（备注 / 议程 / 字体） |
+| `specs/` | `run-spec` 用的 JSON 与 Schema |
+| `specs/templates/` | 大纲 / 答辩骨架模板（L3） |
+| `themes/` | 可选 `.thmx` 主题目录（L2） |
+| `tests/` | Pester 校验测试（L5） |
+| `requirements-charts.txt` | PNG 图表：matplotlib 依赖 |
+| `.cursor/rules/wps-ppt-pipeline.mdc` | Cursor 规则 |
+| `skills/drive-wps-ppt/SKILL.md` | 操作流程 |
+
+## 环境要求
+
+- Windows，已安装 **WPS Office**（含演示）。
+- PowerShell 5.1+（或 PowerShell 7；需与 WPS COM **位数一致**，常见为 64 位）。
+- 本机已注册 COM，可自查：
+
+```powershell
+Get-CimInstance Win32_ClassicCOMClassSetting |
+  Where-Object { $_.ProgId -match 'Kwpp|wpp|KWPS' } |
+  Select-Object ProgId
+```
+
+## 本地试跑（不经过 Gateway）
+
+在项目根目录执行（将路径换成你的机器上的实际根目录）。**优先在同一 PowerShell 会话里用点调用**，避免再套一层 `powershell.exe` 时引号把 JSON 弄坏：
+
+```powershell
+cd 'd:\第一个系统\cursor-openclaw-wps-ppt'
+.\tools\wps_run_spec.ps1 -ArgsJson '{"specPath":"specs/example-spec.json"}'
+```
+
+若必须从 `cmd.exe` 或 CI 再起进程，可把 JSON 放进变量或 **`OC_ARGS_JSON` 环境变量**（[Read-OcArgs](wps-driver/Wps.Common.ps1) 在 `-ArgsJson` 为空时会读取）。
+
+成功时 stdout 为一行 JSON，`data.path` 为生成的 `.pptx`。
+
+单次 `new`：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\wps_new.ps1 -ArgsJson '{"outPath":"output/manual.pptx"}'
+```
+
+## OpenClaw 接入
+
+1. 把本仓库路径登记到 Gateway 的插件/工具搜索路径。
+2. 读取 [manifest.json](manifest.json)，将每个 `action` 映射为：在**项目根目录**执行对应 `tools/*.ps1`，并把 Cursor 侧的 `args_json` 传给 `-ArgsJson`（或写入环境变量 `OC_ARGS_JSON` 后调用无参封装，需自行二选一）。
+3. Cursor 里启用 [`.cursor/rules/wps-ppt-pipeline.mdc`](.cursor/rules/wps-ppt-pipeline.mdc)，Agent 按 [`skills/drive-wps-ppt/SKILL.md`](skills/drive-wps-ppt/SKILL.md) 调用 `openclaw_invoke`。
+
+## 会话与状态
+
+- `logs/wps-session.json`：当前 `presentationPath`，供 `add-slide`、`set-text` 等脚本找到活动文档。
+- `run-spec` 会重写会话为新生成的文件。
+
+## 故障排查
+
+| 现象 | 可能原因 |
+|------|----------|
+| Invalid class string / 无法创建 COM | 未装 WPS 或 ProgID 不同；驱动里已按多种 ProgID 依次尝试 |
+| 找不到会话 | 先执行 `new` 或 `open` |
+| 自动化无反应 | WPS 弹窗拦截、安全中心禁止宏/COM；尝试信任本机脚本目录 |
+| 保存失败 | 无写权限、`output/` 不存在（脚本会自动建目录） |
+
+## Roadmap
+
+- **图表**：PNG（matplotlib）+ **COM 内嵌（best-effort）**。
+- **配图**：**`imageUrl`**（SSRF 加固）+ 本地 **`image`**。
+- **主题**：`themes/` + `.thmx`；可选 COM 自动套色。
+- 动画、更稳的母版占位符（多语言）、会话 `attach` 等。
+
+## 许可
+
+按你的主仓库策略自行添加；本骨架未默认附带许可证文件。

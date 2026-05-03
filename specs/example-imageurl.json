@@ -1,0 +1,28 @@
+{
+  "title": "远程配图示例（安全策略）",
+  "savePath": "output/example-imageurl.pptx",
+  "assetFetch": {
+    "allowedHosts": ["upload.wikimedia.org"],
+    "maxBytes": 3145728,
+    "timeoutSec": 25,
+    "softFail": false
+  },
+  "theme": {
+    "font": "Microsoft YaHei"
+  },
+  "slides": [
+    {
+      "layout": "title",
+      "title": "HTTPS 配图",
+      "subtitle": "白名单主机示例",
+      "notes": "仅允许 assetFetch.allowedHosts；默认禁止内网与 metadata IP。"
+    },
+    {
+      "layout": "title-content",
+      "title": "演示图片",
+      "bullets": ["图片来自受控域名", "类型限于 png/jpeg/gif/webp"],
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/4/47/PNG_transparency_demonstration_1.png",
+      "notes": "若拉取失败且 softFail 为 false，整稿 run-spec 会失败。"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "savePath": "output/from-template-outline.pptx",
+  "autoAgenda": true,
+  "agendaTitle": "议程",
+  "theme": {
+    "font": "Microsoft YaHei"
+  },
+  "slides": [
+    {
+      "layout": "title",
+      "title": "项目标题",
+      "subtitle": "一句价值主张",
+      "notes": "待展开：开场 30s"
+    },
+    {
+      "layout": "section",
+      "title": "第一章节（动宾短语）",
+      "subtitle": "本章讲什么",
+      "notes": "大纲：待填要点"
+    },
+    {
+      "layout": "section",
+      "title": "第二章节",
+      "subtitle": "",
+      "notes": "待展开"
+    }
+  ]
+}

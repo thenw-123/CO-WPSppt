@@ -1,0 +1,52 @@
+{
+  "savePath": "output/from-template-defense.pptx",
+  "autoAgenda": true,
+  "agendaTitle": "议程",
+  "theme": {
+    "font": "Microsoft YaHei"
+  },
+  "slides": [
+    {
+      "layout": "title",
+      "title": "项目名称",
+      "subtitle": "动词价值主张十字内",
+      "notes": "开场与听众关系"
+    },
+    {
+      "layout": "title-content",
+      "title": "痛点与背景",
+      "bullets": ["待填≤5条≤15字"],
+      "notes": "60s，抛问题"
+    },
+    {
+      "layout": "title-content",
+      "title": "方案概览",
+      "bullets": ["待填"],
+      "notes": "过渡：如何解决"
+    },
+    {
+      "layout": "title-content",
+      "title": "技术实现要点",
+      "bullets": ["待填业务化表述"],
+      "notes": "准备追问架构"
+    },
+    {
+      "layout": "chart",
+      "title": "数据与验证",
+      "chart_type": "bar",
+      "data_summary": "待填对比口径",
+      "insight": "待填一句洞察",
+      "chart_data": {
+        "labels": ["A", "B"],
+        "series": [{ "name": "指标", "values": [1, 2] }]
+      },
+      "notes": "强调数字与测试环境"
+    },
+    {
+      "layout": "title-content",
+      "title": "展望与下一步",
+      "bullets": ["待填"],
+      "notes": "收尾 30s"
+    }
+  ]
+}

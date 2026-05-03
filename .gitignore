@@ -1,0 +1,11 @@
+output/*
+!output/.gitkeep
+logs/*.log
+logs/wps-session.json
+*.tmp
+
+extension/node_modules/
+extension/out/
+extension/bundled/
+extension/*.vsix
+node_modules/

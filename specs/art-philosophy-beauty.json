@@ -1,0 +1,256 @@
+{
+  "title": "艺术哲学：美是如何诞生的",
+  "savePath": "output/art-philosophy-beauty.pptx",
+  "autoAgenda": true,
+  "agendaTitle": "目录",
+  "theme": {
+    "name": "艺术哲学·深蓝金",
+    "titleFont": "华文中宋",
+    "bodyFont": "微软雅黑",
+    "defaultSlideBackground": "#F4F1EA",
+    "defaultTitleColor": "#0F2744",
+    "defaultBodyColor": "#334155",
+    "defaultTransition": "fade",
+    "defaultTransitionDuration": 0.65,
+    "defaultAnimateBuild": true,
+    "agendaBackground": "#0F2744",
+    "agendaTitleColor": "#F5E6C8",
+    "agendaBodyColor": "#C8D4E0",
+    "agendaAccentColor": "#C9A227",
+    "agendaTwoColumn": true,
+    "agendaNumbered": true,
+    "colors": {
+      "primary": "#0F2744",
+      "secondary": "#1E3A5F",
+      "accent": "#B8860B"
+    }
+  },
+  "slides": [
+    {
+      "layout": "title",
+      "title": "艺术哲学：美是如何诞生的",
+      "subtitle": "摹仿·形式·体验——在历史与判断之间",
+      "background": "#E8E4DC",
+      "titleColor": "#0F2744",
+      "bodyColor": "#3D2E1F",
+      "imageCommons": "The School of Athens.jpg",
+      "imagePlacement": "bottom",
+      "bodyBottomLimit": 248,
+      "transition": "fade",
+      "transitionDuration": 0.75,
+      "animateBuild": false,
+      "notes": "约45秒：雅典学院作视觉锚点——哲学与观看传统。底图不抢主标题；口播点出「美」在历史中被不断重新定义。"
+    },
+    {
+      "layout": "section",
+      "title": "我们到底在谈什么",
+      "subtitle": "把日常「好看」提升为可讨论的哲学问题",
+      "background": "#EEF2F7",
+      "titleColor": "#0F2744",
+      "bodyColor": "#475569",
+      "imageCommons": "The Thinker, Rodin.jpg",
+      "imagePlacement": "bottom",
+      "bodyBottomLimit": 255,
+      "transition": "push",
+      "transitionDuration": 0.6,
+      "notes": "约40秒：Rodin 暗示「沉思」——美学不是直觉口号，而要澄清概念与论证。"
+    },
+    {
+      "layout": "title-content",
+      "title": "美：贴在物上还是判断里",
+      "subtitle": "小标题延伸：物提供线索，但「美」常在描述、比较与理由中显形。",
+      "background": "#FAF8F5",
+      "titleColor": "#0F2744",
+      "bodyColor": "#334155",
+      "imageCommons": "Sandro Botticelli - La nascita di Venere - Google Art Project - edited.jpg",
+      "imagePlacement": "right",
+      "imageReservedRight": 400,
+      "transition": "wipe",
+      "transitionDuration": 0.55,
+      "bullets": [
+        "物：线条、色彩、比例触发注意，可被反复指认。",
+        "观者：文化教养与心情，会改写同一物的「分量」。",
+        "语言：一旦说「美」，就把私体验拉进可讨论的公共域。",
+        "哲学问题：美是属性、关系，还是判断的合法化？",
+        "本讲策略：以史为纲，用个案把「诞生」讲成过程。"
+      ],
+      "notes": "约75秒：维纳斯图像支撑「典范」想象，同时提示历史语境。追问：若无人观看，作品仍「美」吗？可答：仍有潜在可感结构，但「美」的命题需主体。"
+    },
+    {
+      "layout": "timeline",
+      "title": "西方美学若干节点",
+      "background": "#F0F4F8",
+      "titleColor": "#0F2744",
+      "bodyColor": "#334155",
+      "imageCommons": "Parthenon from west.jpg",
+      "imagePlacement": "right",
+      "imageReservedRight": 395,
+      "transition": "uncover",
+      "transitionDuration": 0.7,
+      "timeline": [
+        { "mark": "古希腊", "text": "和谐、比例与摹仿：美常与「秩序」和典范作品绑定。" },
+        { "mark": "近代", "text": "认识论转向：趣味、感性、判断力进入哲学中心舞台。" },
+        { "mark": "德国古典", "text": "自由感、合目的性等概念，尝试调和感性与普遍性。" },
+        { "mark": "19—20世纪", "text": "自律与先锋：「美」的边界被不断实验与争议重写。" }
+      ],
+      "notes": "约90秒：帕特农作为「秩序」隐喻。强调这是缩略史，非百科全书。可追问：柏拉图理念论与摹仿。"
+    },
+    {
+      "layout": "comparison",
+      "title": "摹仿与表现：两种授权",
+      "background": "#FAF8F5",
+      "titleColor": "#0F2744",
+      "bodyColor": "#334155",
+      "imageCommons": "Laocoon Pio-Clementino Inv1059-1064-1067.jpg",
+      "imagePlacement": "right",
+      "imageReservedRight": 388,
+      "transition": "push",
+      "transitionDuration": 0.6,
+      "comparison": {
+        "leftHeader": "偏客观/典范传统",
+        "rightHeader": "偏主体/表现传统",
+        "rows": [
+          {
+            "left": "美常系于可教的规则、范本与和谐",
+            "right": "美更系于情感强度、个性与创造行为"
+          },
+          {
+            "left": "批评可诉诸「像不像」「是否得体」",
+            "right": "批评更诉诸「真不真」「有无新意」"
+          },
+          {
+            "left": "观众学习公共标准，作品似「考试」",
+            "right": "观众承认作者视角，作品似「声明」"
+          }
+        ]
+      },
+      "notes": "约80秒：拉奥孔象征古典范式下的身体与戏剧性。口播可对照浪漫主义或表现主义绘画。目的：展示「美」由不同话语授权。"
+    },
+    {
+      "layout": "thesis-chain",
+      "title": "机制：从物到判断",
+      "background": "#EEF2F7",
+      "titleColor": "#0F2744",
+      "bodyColor": "#334155",
+      "imageCommons": "Da Vinci Vitruve Luc Viatour.jpg",
+      "imagePlacement": "right",
+      "imageReservedRight": 392,
+      "transition": "wipe",
+      "transitionDuration": 0.65,
+      "chain": [
+        { "label": "物", "text": "可感性质与形式：轮廓、节奏、材质。" },
+        { "label": "感", "text": "注意与情感参与：滞留、惊奇、舒适或不安。" },
+        { "label": "概念", "text": "范畴与传统语汇暗中组织所见，引导归类。" },
+        { "label": "判断", "text": "在批评与教育中，「美」被说出、辩护或修正。" }
+      ],
+      "notes": "约85秒：维特鲁威人作「尺度」隐喻——美常与比例感相连，但判断仍属主体。为下一页康德做铺垫。"
+    },
+    {
+      "layout": "title-content",
+      "title": "康德：审美判断如何可能",
+      "subtitle": "小标题延伸：《判断力批判》区分快适、善与美；审美判断主张「无概念的合目的性」与「无目的的合目的性」式愉悦，并要求「范例性的普遍可传达性」——美在主体能力协调中被给出，却要求似有规律般的可共享。",
+      "background": "#FDFBF7",
+      "titleColor": "#0F2744",
+      "bodyColor": "#334155",
+      "imageCommons": "Immanuel Kant (portrait).jpg",
+      "imagePlacement": "right",
+      "imageReservedRight": 385,
+      "commonsThumbWidth": 500,
+      "transition": "cut",
+      "transitionDuration": 0.45,
+      "bullets": [
+        "快适：感官偏好，无普遍要求；善：概念与目的先行。",
+        "审美愉悦：不凭确定概念，却带「合目的」的形式感。",
+        "崇高：想象力与理性冲突中的「超越性」体验，补充优美。",
+        "普遍可传达性：我要求他人「应当」能同意，而非统计同意。",
+        "小结：康德把「美的诞生」系于判断能力，而非单纯外物属性。"
+      ],
+      "notes": "约100秒：肖像增强人物锚点。准备追问：这是主观主义吗？可答：先验主体条件+对共通感的要求，非纯任意。"
+    },
+    {
+      "layout": "argument",
+      "title": "一页收束：美在交汇处生成",
+      "background": "#E8E4DC",
+      "titleColor": "#0F2744",
+      "bodyColor": "#334155",
+      "imageCommons": "Louvre Museum Wikimedia Commons.jpg",
+      "imagePlacement": "bottom",
+      "bodyBottomLimit": 268,
+      "transition": "uncover",
+      "transitionDuration": 0.72,
+      "argument": {
+        "thesis": "「美」在可感形式、历史范畴与公共言说的交汇处被生产出来。",
+        "because": [
+          "没有形式线索，感知难以稳定为「审美」而非单纯刺激",
+          "没有艺术史与语汇，描述与比较失去抓手与细密度",
+          "没有展览、教育与批评，标准无法协商、传承与自我更新"
+        ],
+        "therefore": "追问美如何诞生，等于追问这套交汇如何在具体作品中发生。"
+      },
+      "notes": "约70秒：卢浮宫外景暗示「公共空间」中的美学协商。追问相对主义：条件性不等于取消辩理，仍可有好的理由。"
+    },
+    {
+      "layout": "thesis-vertical",
+      "title": "把握美的三个梯级",
+      "background": "#F0F4F8",
+      "titleColor": "#0F2744",
+      "bodyColor": "#334155",
+      "imageCommons": "Meisje met de parel.jpg",
+      "imagePlacement": "right",
+      "imageReservedRight": 390,
+      "transition": "push",
+      "transitionDuration": 0.6,
+      "thesisVertical": {
+        "claim": "先会看，再会辨，最后能论——美的意识逐步社会化。",
+        "steps": [
+          { "label": "观看", "text": "停留、扫视、重复：让细节从背景中浮现。" },
+          { "label": "辨析", "text": "借风格史与技术词，把差异说成可追踪的特征。" },
+          { "label": "论证", "text": "给出理由，回应质疑，让判断经受他者与时间检验。" }
+        ]
+      },
+      "notes": "约75秒：维米尔作「凝视」隐喻。例子：从「好看」到「线条如何承担情绪」。"
+    },
+    {
+      "layout": "title-content",
+      "title": "中国美学的一点呼应",
+      "subtitle": "小标题延伸：品评话语（气韵、骨法、意境）把观看与人生境界相连，美往往不脱离伦理与自然观而孤立定义。",
+      "background": "#FAF8F5",
+      "titleColor": "#0F2744",
+      "bodyColor": "#334155",
+      "imageCommons": "Ni Zan - Enjoying the Wilderness in an Autumn Grove - 1989.363.38 - Metropolitan Museum of Art.jpg",
+      "imagePlacement": "right",
+      "imageReservedRight": 382,
+      "transition": "wipe",
+      "transitionDuration": 0.58,
+      "bullets": [
+        "山水画：留白与笔墨节奏，训练一种「慢观看」。",
+        "品评传统：以隐喻性语言建立等级与传承谱系。",
+        "意境：情与景、虚与实在画面上协商，而非单点装饰。",
+        "与西方对话：可比「交汇生成」，但不宜简单比附。",
+        "深入需专书：画论、诗话与书论互参。"
+      ],
+      "notes": "约60秒：倪瓒条目的疏淡风格呼应「意境」讨论。追问：品评语汇是否限制观看？"
+    },
+    {
+      "layout": "title-content",
+      "title": "结语：开放的问题",
+      "subtitle": "小标题延伸：技术复制、数码生成与全球化展陈，都在改写「光晕」与作者性；保持争论，正是美学保持活力的方式。",
+      "background": "#EEF2F7",
+      "titleColor": "#0F2744",
+      "bodyColor": "#334155",
+      "imageCommons": "Van Gogh - Starry Night - Google Art Project.jpg",
+      "imagePlacement": "right",
+      "imageReservedRight": 395,
+      "transition": "fade",
+      "transitionDuration": 0.85,
+      "bullets": [
+        "美在历史与实践中生成，无终局定义。",
+        "先锋与大众文化持续拉扯「美」的边界。",
+        "复制与算法：再问原作、作者与观看伦理。",
+        "教学意义：美学训练的是理由与感受力的双向磨砺。",
+        "欢迎批评与延伸阅读。"
+      ],
+      "notes": "约55秒：星空作「超越日常知觉」的隐喻。收束提问：AI 图像是否构成新的审美判断情境？"
+    }
+  ]
+}
