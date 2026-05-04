@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "WPS-PPT render plan",
+  "description": "Renderer-facing plan. In phase 1 it wraps a compiled legacy spec while preserving a stable renderer contract.",
+  "type": "object",
+  "required": ["renderPlanVersion", "renderer", "legacySpec"],
+  "properties": {
+    "renderPlanVersion": {
+      "type": "string",
+      "enum": ["1.0"]
+    },
+    "renderer": {
+      "type": "string",
+      "enum": ["wps-com"]
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "dslVersion": { "type": "string" },
+        "compiledAt": { "type": "string" }
+      }
+    },
+    "legacySpec": {
+      "type": "object",
+      "description": "Legacy ppt-spec consumed by the current PowerShell WPS renderer."
+    }
+  }
+}

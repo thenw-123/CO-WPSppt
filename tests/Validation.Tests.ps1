@@ -4,6 +4,8 @@
 $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 . (Join-Path $RepoRoot 'wps-driver\Wps.Common.ps1')
 . (Join-Path $RepoRoot 'wps-driver\Wps.ValidateSpec.ps1')
+. (Join-Path $RepoRoot 'wps-driver\Wps.Dsl.ps1')
+. (Join-Path $RepoRoot 'wps-driver\Wps.RenderPlan.ps1')
 
 Describe 'Map-LayoutNameToInt' {
     It 'maps known layouts' {
@@ -115,5 +117,61 @@ Describe 'Test-PptDeckSpecObject extended' {
 '@ | ConvertFrom-Json
         $e = Test-PptDeckSpecObject -Spec $s
         $e.Count | Should Be 0
+    }
+}
+
+Describe 'PPT DSL compiler' {
+    It 'accepts minimal DSL' {
+        $dsl = @'
+{"dslVersion":"2.0","slides":[{"kind":"cover","title":"T"}]}
+'@ | ConvertFrom-Json
+        $e = Test-PptDslObject -Dsl $dsl
+        $e.Count | Should Be 0
+    }
+
+    It 'rejects unknown DSL slide kind' {
+        $dsl = @'
+{"dslVersion":"2.0","slides":[{"kind":"unknown","title":"T"}]}
+'@ | ConvertFrom-Json
+        $e = Test-PptDslObject -Dsl $dsl
+        $e.Count | Should BeGreaterThan 0
+    }
+
+    It 'compiles argument DSL to legacy narrative spec' {
+        $dsl = @'
+{"dslVersion":"2.0","slides":[{"kind":"argument","message":"M","content":{"claim":"C","points":["a","b"],"conclusion":"Z"}}]}
+'@ | ConvertFrom-Json
+        $spec = Convert-PptDslToLegacySpec -Dsl $dsl
+        $spec.slides[0].layout | Should Be 'argument'
+        $spec.slides[0].argument.thesis | Should Be 'C'
+        $spec.slides[0].argument.because.Count | Should Be 2
+        $legacyErrors = Test-PptDeckSpecObject -Spec $spec
+        $legacyErrors.Count | Should Be 0
+    }
+
+    It 'wraps compiled DSL in a render plan' {
+        $dsl = @'
+{"dslVersion":"2.0","slides":[{"kind":"content","title":"T","content":{"points":["a"]}}]}
+'@ | ConvertFrom-Json
+        $plan = Convert-PptDslToRenderPlan -Dsl $dsl
+        $plan.renderPlanVersion | Should Be '1.0'
+        $plan.renderer | Should Be 'wps-com'
+        $plan.legacySpec.slides[0].layout | Should Be 'title-content'
+    }
+
+    It 'compiles simple PPT DSL v2 example' {
+        $dsl = Get-Content -LiteralPath (Join-Path $RepoRoot 'specs\dsl\example-simple.json') -Raw -Encoding UTF8 | ConvertFrom-Json
+        $plan = Convert-PptDslToRenderPlan -Dsl $dsl
+        $plan.legacySpec.title | Should Be '季度项目进展汇报'
+        $plan.legacySpec.slides.Count | Should Be 2
+        $plan.legacySpec.slides[1].bullets.Count | Should Be 3
+    }
+
+    It 'compiles complex PPT DSL v2 chart and table elements' {
+        $dsl = Get-Content -LiteralPath (Join-Path $RepoRoot 'specs\dsl\example-complex.json') -Raw -Encoding UTF8 | ConvertFrom-Json
+        $plan = Convert-PptDslToRenderPlan -Dsl $dsl
+        $chartSlide = @($plan.legacySpec.slides | Where-Object { $_.layout -eq 'chart' } | Select-Object -First 1)[0]
+        $chartSlide.chart_type | Should Be 'bar'
+        $chartSlide.chart_data.labels.Count | Should Be 3
     }
 }

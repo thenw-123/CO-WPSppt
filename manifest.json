@@ -74,6 +74,18 @@
       "args": ["specPath?", "spec?", "skipValidation?"]
     },
     {
+      "name": "compile-dsl",
+      "script": "tools/wps_compile_dsl.ps1",
+      "description": "Compile high-level PPT DSL to a renderer plan or legacy spec without starting WPS",
+      "args": ["dslPath?", "dsl?", "format?"]
+    },
+    {
+      "name": "run-dsl",
+      "script": "tools/wps_run_dsl.ps1",
+      "description": "Build full deck from high-level PPT DSL through RenderPlan and WPS COM",
+      "args": ["dslPath?", "dsl?"]
+    },
+    {
       "name": "validate-spec",
       "script": "tools/wps_validate_spec.ps1",
       "description": "Validate spec JSON structure (no WPS); returns errors array on failure",
