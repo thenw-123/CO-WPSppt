@@ -1,0 +1,96 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://openclaw.local/schemas/ppt-edit-v1.schema.json",
+  "title": "PPT Edit DSL v1",
+  "description": "Patch request for editing a PPT DSL v2 deck without regenerating unrelated slides.",
+  "type": "object",
+  "required": ["editVersion", "target", "operations"],
+  "additionalProperties": false,
+  "properties": {
+    "editVersion": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "target": {
+      "type": "object",
+      "required": ["dslPath"],
+      "additionalProperties": false,
+      "properties": {
+        "dslPath": {
+          "type": "string",
+          "description": "Current PPT DSL v2 file to edit."
+        }
+      }
+    },
+    "operations": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/operation" }
+    },
+    "options": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "validateAfterEdit": {
+          "type": "boolean",
+          "default": true
+        },
+        "renderAfterEdit": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, caller should run full run-dsl after saving the edited DSL."
+        },
+        "outPath": {
+          "type": "string",
+          "description": "Optional edited DSL output path. Defaults to overwriting target.dslPath."
+        }
+      }
+    }
+  },
+  "definitions": {
+    "operation": {
+      "type": "object",
+      "required": ["op", "target"],
+      "additionalProperties": false,
+      "properties": {
+        "op": {
+          "type": "string",
+          "enum": ["replace", "update"]
+        },
+        "target": {
+          "type": "object",
+          "required": ["slideId"],
+          "additionalProperties": false,
+          "properties": {
+            "slideId": {
+              "type": "string",
+              "description": "Stable slide id in PPT DSL v2."
+            },
+            "elementId": {
+              "type": "string",
+              "description": "Stable element id. Omit for slide-level replace."
+            }
+          }
+        },
+        "value": {
+          "type": "object",
+          "description": "Replacement slide or element for replace operations."
+        },
+        "patch": {
+          "type": "object",
+          "description": "Shallow field patch for update operations."
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "op": { "const": "replace" } } },
+          "then": { "required": ["value"] }
+        },
+        {
+          "if": { "properties": { "op": { "const": "update" } } },
+          "then": { "required": ["patch"] }
+        }
+      ]
+    }
+  }
+}

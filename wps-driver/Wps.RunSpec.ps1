@@ -96,6 +96,7 @@ function Invoke-WpsDeckFromSpec {
     $deckSlideH = 540.0
     try { $deckSlideH = [double]$pres.PageSetup.SlideHeight } catch { }
     $narrativeLayouts = @('timeline', 'comparison', 'thesis-chain', 'argument', 'thesis-vertical', 'swot')
+    $comWarnings = [System.Collections.Generic.List[string]]::new()
 
     for ($i = 0; $i -lt $slidesSpec.Count; $i++) {
         $s = $slidesSpec[$i]
@@ -219,105 +220,15 @@ function Invoke-WpsDeckFromSpec {
         $noteText = [string]$s.notes
         if ($noteText) { Set-WpsSlideNotes -Slide $slide -Text $noteText }
 
-        $hasChartData = $null -ne $s.chart_data
-        $ctLower = if ($s.chart_type) { [string]$s.chart_type } else { '' }
-        $ctLower = $ctLower.ToLowerInvariant()
-        if ($hasChartData -and -not $ctLower) { $ctLower = 'bar' }
+        Invoke-WpsSlideChartRender -Slide $slide -SlideSpec $s -SlideIndex ($i + 1) `
+            -ProjectRoot $ProjectRoot -ChartDir $chartDir -SlideWidth $deckSlideW
 
-        $chartEngine = 'png'
-        if ($s.chart_engine) {
-            $ce = [string]$s.chart_engine
-            if ($ce.ToLowerInvariant() -eq 'com') { $chartEngine = 'com' }
-        }
+        Invoke-WpsSlideAssetRender -Slide $slide -SlideSpec $s -SlideIndex ($i + 1) `
+            -ProjectRoot $ProjectRoot -AssetsDir $assetsDir -AssetFetchOptions $assetOpts -SlideWidth $deckSlideW
 
-        $comOk = $false
-        if ($chartEngine -eq 'com' -and $hasChartData -and ($ctLower -in @('bar', 'line', 'donut')) -and (-not $s.image) -and (-not $s.imageUrl) -and (-not $s.imageCommons)) {
-            try {
-                Add-WpsEmbeddedChartFromData -Slide $slide -ChartType $ctLower -ChartData $s.chart_data
-                $comOk = $true
-            } catch {
-                Write-Verbose ("COM chart skipped: " + $_.Exception.Message)
-            }
-        }
-
-        $skipChartPng = $false
-        if ($null -ne $s.chart_render) {
-            $cr = $s.chart_render
-            if ($cr -eq $false) { $skipChartPng = $true }
-            elseif ([string]$cr -match '^(0|false|off|none)$') { $skipChartPng = $true }
-        }
-        $fallbackPng = $true
-        if ($null -ne $s.chart_fallback_png -and $s.chart_fallback_png -eq $false) { $fallbackPng = $false }
-
-        $canPng = (-not $skipChartPng) -and $hasChartData -and ($ctLower -in @('bar', 'line', 'donut')) -and (-not $s.image) -and (-not $s.imageUrl) -and (-not $s.imageCommons)
-        if ($chartEngine -eq 'com' -and $comOk) { $canPng = $false }
-        if ($chartEngine -eq 'com' -and -not $comOk -and -not $fallbackPng) { $canPng = $false }
-
-        if ($canPng) {
-            $pngPath = Join-Path $chartDir ('slide-{0}.png' -f ($i + 1))
-            try {
-                Invoke-PptChartPngRender -ProjectRoot $ProjectRoot -OutPngPath $pngPath -ChartType $ctLower -ChartData $s.chart_data
-                Add-WpsSlidePictureFromSpec -Slide $slide -ImagePath $pngPath -SlideSpec $s -SlideWidth $deckSlideW | Out-Null
-            } catch {
-                Write-Verbose ("Chart PNG skipped: " + $_.Exception.Message)
-            }
-        }
-
-        if ($s.imageCommons) {
-            $wComm = 500
-            if ($null -ne $s.commonsThumbWidth) {
-                try { $wComm = [int]$s.commonsThumbWidth } catch { $wComm = 500 }
-            }
-            $localComm = Join-Path $assetsDir ('commons-s{0}-{1}.jpg' -f ($i + 1), [Guid]::NewGuid().ToString('N').Substring(0, 10))
-            Save-WpsCommonsThumbFile -FileTitle ([string]$s.imageCommons) -OutPath $localComm -Width $wComm
-            Add-WpsSlidePictureFromSpec -Slide $slide -ImagePath $localComm -SlideSpec $s -SlideWidth $deckSlideW | Out-Null
-        }
-
-        if ($s.imageUrl) {
-            try {
-                $saved = Save-RemoteImageForSlide -UrlString ([string]$s.imageUrl) -DestDir $assetsDir -FetchOptions $assetOpts
-                Add-WpsSlidePictureFromSpec -Slide $slide -ImagePath $saved -SlideSpec $s -SlideWidth $deckSlideW | Out-Null
-            } catch {
-                if ($assetOpts.SoftFail) {
-                    Write-Verbose ("imageUrl skipped: " + $_.Exception.Message)
-                } else {
-                    throw
-                }
-            }
-        }
-
-        if ($s.image) {
-            $img = [string]$s.image
-            if (-not [System.IO.Path]::IsPathRooted($img)) {
-                $img = Join-Path $ProjectRoot $img
-            }
-            if (Test-Path -LiteralPath $img) {
-                Add-WpsSlidePictureFromSpec -Slide $slide -ImagePath $img -SlideSpec $s -SlideWidth $deckSlideW | Out-Null
-            }
-        }
-
-        $tfx = $null
-        if ($s.transition) { $tfx = [string]$s.transition }
-        if (-not $tfx -and $themeBlock -and $themeBlock.defaultTransition) { $tfx = [string]$themeBlock.defaultTransition }
-        $td = 0.55
-        if ($null -ne $s.transitionDuration) {
-            try { $td = [double]$s.transitionDuration } catch { }
-        } elseif ($themeBlock -and $null -ne $themeBlock.defaultTransitionDuration) {
-            try { $td = [double]$themeBlock.defaultTransitionDuration } catch { }
-        }
-        if ($tfx) { Set-WpsSlideTransitionFromSpec -Slide $slide -EffectName $tfx -Seconds $td }
-
-        $doBuild = $false
-        if ($null -ne $s.animateBuild) {
-            try { $doBuild = [bool]$s.animateBuild } catch { }
-        }
-        if (-not $doBuild -and $themeBlock -and $null -ne $themeBlock.defaultAnimateBuild) {
-            try { $doBuild = [bool]$themeBlock.defaultAnimateBuild } catch { }
-        }
-        if ($doBuild) {
-            $tcFlag = $null -ne $s.twoColumns
-            Set-WpsSlideAnimateBuild -Slide $slide -TwoColumn:$tcFlag -Narrative:$isNarrative
-        }
+        $tcFlag = $null -ne $s.twoColumns
+        Invoke-WpsSlideMotionRender -Slide $slide -SlideSpec $s -ThemeBlock $themeBlock `
+            -TwoColumn:$tcFlag -Narrative:$isNarrative -SlideNumber ($i + 1) -ComWarnings $comWarnings
     }
 
     $doAgenda = $false
@@ -341,9 +252,13 @@ function Invoke-WpsDeckFromSpec {
     }
 
     Save-WpsPresentation -Pres $pres -Path $out
-    return @{
+    $ret = @{
         path             = (Resolve-Path -LiteralPath $out).Path
         slideCount       = [int]$pres.Slides.Count
         presentationPath = (Resolve-Path -LiteralPath $out).Path
     }
+    if ($comWarnings.Count -gt 0) {
+        $ret.comWarnings = @($comWarnings)
+    }
+    return $ret
 }

@@ -17,6 +17,7 @@ const copies = [
   'specs',
   'themes',
   'tests',
+  'docs',
   'manifest.json',
   'requirements-charts.txt',
   'skills',

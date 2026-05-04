@@ -9,6 +9,7 @@ try {
     . (Join-Path $ProjectRoot 'wps-driver\Wps.ChartRender.ps1')
     . (Join-Path $ProjectRoot 'wps-driver\Wps.ChartCom.ps1')
     . (Join-Path $ProjectRoot 'wps-driver\Wps.UrlAsset.ps1')
+    . (Join-Path $ProjectRoot 'wps-driver\Wps.RendererHelpers.ps1')
     . (Join-Path $ProjectRoot 'wps-driver\Wps.ValidateSpec.ps1')
     $a = Read-OcArgs -ArgsJson $ArgsJson
     $spec = $null

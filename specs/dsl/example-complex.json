@@ -1,0 +1,216 @@
+{
+  "dslVersion": "2.0",
+  "meta": {
+    "title": "AI 生成 PPT WPS 插件三层架构重构",
+    "subtitle": "从低级 JSON 到语义 DSL",
+    "audience": "工程团队",
+    "purpose": "technical-design",
+    "language": "zh-CN",
+    "author": "OpenClaw WPS-PPT",
+    "savePath": "output/dsl-complex-demo.pptx",
+    "tags": ["architecture", "dsl", "wps"]
+  },
+  "theme": {
+    "preset": "business-blue",
+    "template": {
+      "id": "engineering-review",
+      "variant": "light"
+    },
+    "fonts": {
+      "title": "Microsoft YaHei",
+      "body": "Microsoft YaHei",
+      "mono": "Cascadia Mono"
+    },
+    "colors": {
+      "primary": "#123B73",
+      "secondary": "#2B6CB0",
+      "accent": "#F59E0B",
+      "background": "#F7FAFC",
+      "title": "#123B73",
+      "body": "#243447"
+    },
+    "motion": {
+      "transition": "fade",
+      "duration": 0.5,
+      "build": "byElement",
+      "effect": "fade"
+    }
+  },
+  "defaults": {
+    "layout": "auto",
+    "imagePlacement": "right",
+    "chartEngine": "auto",
+    "assetFetch": {
+      "allowedHosts": ["example.com", "upload.wikimedia.org"],
+      "maxBytes": 5242880,
+      "timeoutSec": 15,
+      "maxRedirects": 3,
+      "softFail": true
+    }
+  },
+  "slides": [
+    {
+      "id": "cover",
+      "type": "cover",
+      "layout": { "name": "title" },
+      "elements": [
+        {
+          "id": "title",
+          "type": "text",
+          "role": "title",
+          "text": "AI 生成 PPT WPS 插件三层架构重构"
+        },
+        {
+          "id": "subtitle",
+          "type": "text",
+          "role": "subtitle",
+          "text": "Intent Layer / DSL Layer / Renderer Layer"
+        }
+      ]
+    },
+    {
+      "id": "problem",
+      "type": "argument",
+      "message": "当前实现让 agent 直接生成接近渲染层的 JSON，扩展成本高",
+      "layout": { "name": "claim-with-evidence", "density": "normal" },
+      "elements": [
+        {
+          "id": "claim",
+          "type": "text",
+          "role": "claim",
+          "text": "agent 不应直接生成底层 COM JSON"
+        },
+        {
+          "id": "evidence",
+          "type": "bullets",
+          "role": "evidence",
+          "items": [
+            { "text": "add_slide / set_text / insert_image 等脚本语义过低", "evidence": "agent 需要理解执行细节" },
+            { "text": "JSON 字段混合内容、布局、下载策略和动画", "evidence": "schema 扩展容易牵连 renderer" },
+            { "text": "Wps.RunSpec.ps1 承担过多职责", "evidence": "难以测试和替换渲染器" }
+          ]
+        },
+        {
+          "id": "conclusion",
+          "type": "text",
+          "role": "insight",
+          "text": "用 DSL 隔离意图和渲染，才能稳定扩展图表、图片和模板能力。"
+        }
+      ],
+      "notes": "这里强调 DSL 不是操作命令，而是稳定的工程契约。"
+    },
+    {
+      "id": "architecture",
+      "type": "comparison",
+      "message": "三层架构把规划、描述和执行解耦",
+      "layout": { "name": "comparison-matrix" },
+      "elements": [
+        {
+          "id": "title",
+          "type": "text",
+          "role": "title",
+          "text": "三层职责划分"
+        },
+        {
+          "id": "layer-table",
+          "type": "table",
+          "role": "body",
+          "table": {
+            "columns": ["层级", "输入", "输出", "不负责"],
+            "rows": [
+              ["Intent Layer", "用户目标与材料", "DeckIntent", "坐标和 COM"],
+              ["DSL Layer", "DeckIntent", "PPT DSL", "WPS 执行"],
+              ["Renderer Layer", "RenderPlan", "PPTX", "内容规划"]
+            ],
+            "highlight": {
+              "columns": [0]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "metrics",
+      "type": "data",
+      "message": "DSL 层让新增页型的改动范围更可控",
+      "layout": { "name": "data-insight" },
+      "elements": [
+        {
+          "id": "title",
+          "type": "text",
+          "role": "title",
+          "text": "扩展成本对比"
+        },
+        {
+          "id": "chart",
+          "type": "chart",
+          "role": "body",
+          "chart": {
+            "kind": "bar",
+            "title": "新增能力涉及模块数",
+            "data": {
+              "labels": ["旧 JSON 管线", "DSL + Compiler", "RenderPlan"],
+              "series": [
+                {
+                  "name": "平均改动模块",
+                  "values": [7, 4, 2]
+                }
+              ]
+            },
+            "insight": "越靠近 RenderPlan，renderer 需要理解的业务语义越少。",
+            "render": {
+              "engine": "auto",
+              "fallback": "text"
+            }
+          }
+        },
+        {
+          "id": "insight",
+          "type": "text",
+          "role": "insight",
+          "text": "短期可以编译到 legacy spec；中期切换为原生 RenderPlan。"
+        }
+      ]
+    },
+    {
+      "id": "template-image",
+      "type": "content",
+      "message": "视觉控制通过 layout/style/template token 表达，而不是低级坐标",
+      "layout": { "name": "image-right" },
+      "elements": [
+        {
+          "id": "title",
+          "type": "text",
+          "role": "title",
+          "text": "视觉控制仍然可配置"
+        },
+        {
+          "id": "points",
+          "type": "bullets",
+          "role": "body",
+          "items": [
+            "layout.name 表达版式意图",
+            "theme.colors 和 style.variant 表达视觉 token",
+            "image.source 表达素材来源和安全策略"
+          ]
+        },
+        {
+          "id": "reference-image",
+          "type": "image",
+          "role": "decorative",
+          "source": {
+            "kind": "commons",
+            "title": "The School of Athens.jpg",
+            "policy": "default",
+            "credit": "Wikimedia Commons"
+          },
+          "layoutHint": {
+            "placement": "right",
+            "emphasis": "normal"
+          },
+          "alt": "一张用于展示视觉素材插入能力的示例图片"
+        }
+      ]
+    }
+  ]
+}

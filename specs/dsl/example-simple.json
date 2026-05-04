@@ -1,0 +1,69 @@
+{
+  "dslVersion": "2.0",
+  "meta": {
+    "title": "季度项目进展汇报",
+    "subtitle": "研发效率与交付风险",
+    "audience": "管理层",
+    "purpose": "review",
+    "language": "zh-CN",
+    "savePath": "output/dsl-simple-demo.pptx"
+  },
+  "theme": {
+    "preset": "business-blue",
+    "fonts": {
+      "title": "Microsoft YaHei",
+      "body": "Microsoft YaHei"
+    }
+  },
+  "defaults": {
+    "layout": "auto",
+    "imagePlacement": "auto",
+    "chartEngine": "auto"
+  },
+  "slides": [
+    {
+      "id": "cover",
+      "type": "cover",
+      "layout": { "name": "title" },
+      "elements": [
+        {
+          "id": "title",
+          "type": "text",
+          "role": "title",
+          "text": "季度项目进展汇报"
+        },
+        {
+          "id": "subtitle",
+          "type": "text",
+          "role": "subtitle",
+          "text": "研发效率与交付风险"
+        }
+      ]
+    },
+    {
+      "id": "summary",
+      "type": "content",
+      "message": "整体交付按计划推进，但集成测试存在风险",
+      "layout": { "name": "title-content" },
+      "elements": [
+        {
+          "id": "summary-title",
+          "type": "text",
+          "role": "title",
+          "text": "本季度结论"
+        },
+        {
+          "id": "summary-points",
+          "type": "bullets",
+          "role": "body",
+          "items": [
+            "核心功能完成度达到 85%",
+            "缺陷修复周期下降 18%",
+            "集成测试环境仍是主要风险"
+          ]
+        }
+      ],
+      "notes": "这页用于先给出结论，再进入数据和风险说明。"
+    }
+  ]
+}

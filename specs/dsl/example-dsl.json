@@ -1,0 +1,88 @@
+{
+  "dslVersion": "2.0",
+  "meta": {
+    "title": "AI 生成 PPT WPS 插件三层架构重构",
+    "subtitle": "Intent Layer / DSL Layer / Renderer Layer",
+    "audience": "工程团队",
+    "savePath": "output/dsl-architecture-demo.pptx"
+  },
+  "theme": {
+    "preset": "business-blue",
+    "fonts": {
+      "title": "Microsoft YaHei",
+      "body": "Microsoft YaHei"
+    }
+  },
+  "slides": [
+    {
+      "id": "cover",
+      "type": "cover",
+      "layout": { "name": "title" },
+      "title": "AI 生成 PPT WPS 插件三层架构重构",
+      "elements": [
+        {
+          "id": "title",
+          "type": "text",
+          "role": "title",
+          "text": "AI 生成 PPT WPS 插件三层架构重构"
+        },
+        {
+          "id": "subtitle",
+          "type": "text",
+          "role": "subtitle",
+          "text": "Intent Layer / DSL Layer / Renderer Layer"
+        }
+      ]
+    },
+    {
+      "id": "problem",
+      "type": "argument",
+      "message": "当前实现缺少稳定抽象层",
+      "layout": { "name": "claim-with-evidence" },
+      "elements": [
+        {
+          "id": "claim",
+          "type": "text",
+          "role": "claim",
+          "text": "agent 不应直接生成底层 COM JSON"
+        },
+        {
+          "id": "evidence",
+          "type": "bullets",
+          "role": "evidence",
+          "items": ["脚本碎片化", "校验重复", "扩展成本高"]
+        },
+        {
+          "id": "conclusion",
+          "type": "text",
+          "role": "insight",
+          "text": "需要用 DSL 隔离规划与渲染"
+        }
+      ],
+      "notes": "强调三层拆分后，agent 输出会更稳定。"
+    },
+    {
+      "id": "layers",
+      "type": "content",
+      "title": "三层职责边界",
+      "elements": [
+        {
+          "id": "title",
+          "type": "text",
+          "role": "title",
+          "text": "三层职责边界"
+        },
+        {
+          "id": "points",
+          "type": "bullets",
+          "role": "body",
+          "items": [
+            "Intent Layer 只负责叙事规划",
+            "DSL Layer 负责稳定契约和校验",
+            "Renderer Layer 负责 WPS COM 执行"
+          ]
+        }
+      ]
+    }
+  ]
+}

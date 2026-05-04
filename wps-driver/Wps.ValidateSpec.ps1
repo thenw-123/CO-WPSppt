@@ -5,6 +5,93 @@ $script:PptLayoutEnum = [string[]]@(
     'timeline', 'comparison', 'thesis-chain', 'argument', 'thesis-vertical', 'swot'
 )
 $script:NarrativeLayouts = [string[]]@('timeline', 'comparison', 'thesis-chain', 'argument', 'thesis-vertical', 'swot')
+$script:PptTransitionEffects = [string[]]@(
+    'none', 'fade', 'push', 'wipe', 'cut', 'uncover', 'split', 'cover', 'random', 'blinds', 'dissolve'
+)
+$script:PptAnimateEntranceEffects = [string[]]@('fade', 'appear', 'fly', 'float', 'wipe', 'zoom')
+$script:PptAnimateStepTargets = [string[]]@(
+    'title', 'subtitle', 'body', 'leftcolumn', 'rightcolumn', 'placeholder', 'shapeindex', 'alltextshapes'
+)
+$script:PptAnimateStepBy = [string[]]@('shape', 'paragraph')
+$script:PptAnimateStepTrigger = [string[]]@('click', 'withprevious', 'afterprevious')
+
+function Test-PptAnimateStepsList {
+    param($Steps, [string]$PathLabel, [System.Collections.Generic.List[string]]$Errors)
+    if ($null -eq $Steps) { return }
+    if ($Steps -is [string]) {
+        [void]$Errors.Add("${PathLabel}: must be a JSON array, not a string")
+        return
+    }
+    if ($Steps -isnot [System.Collections.IEnumerable]) {
+        [void]$Errors.Add("${PathLabel}: must be a JSON array")
+        return
+    }
+    $ei = 0
+    foreach ($row in @($Steps)) {
+        $ei++
+        if ($null -eq $row) { continue }
+        $tg = $row.target
+        if (-not $tg -or $tg -isnot [string]) {
+            [void]$Errors.Add("${PathLabel}[$ei]: target is required (string)")
+            continue
+        }
+        $tl = [string]$tg
+        if ($script:PptAnimateStepTargets -notcontains $tl.ToLowerInvariant()) {
+            [void]$Errors.Add("${PathLabel}[$ei].target: unknown '$tl' ($($script:PptAnimateStepTargets -join ', '))")
+        }
+        $tLower = $tl.ToLowerInvariant()
+        if ($tLower -eq 'placeholder') {
+            if ($null -eq $row.placeholder) {
+                [void]$Errors.Add("${PathLabel}[$ei]: placeholder index required when target is placeholder")
+            } else {
+                try {
+                    $pi = [int]$row.placeholder
+                    if ($pi -lt 1) { [void]$Errors.Add("${PathLabel}[$ei].placeholder: must be >= 1") }
+                } catch {
+                    [void]$Errors.Add("${PathLabel}[$ei].placeholder: must be an integer")
+                }
+            }
+        }
+        if ($tLower -eq 'shapeindex') {
+            if ($null -eq $row.shapeIndex) {
+                [void]$Errors.Add("${PathLabel}[$ei]: shapeIndex required when target is shapeIndex")
+            } else {
+                try {
+                    $sx = [int]$row.shapeIndex
+                    if ($sx -lt 1) { [void]$Errors.Add("${PathLabel}[$ei].shapeIndex: must be >= 1") }
+                } catch {
+                    [void]$Errors.Add("${PathLabel}[$ei].shapeIndex: must be an integer")
+                }
+            }
+        }
+        if ($null -ne $row.effect -and $row.effect -is [string]) {
+            $ef = [string]$row.effect
+            if ($ef.Trim() -ne '' -and $script:PptAnimateEntranceEffects -notcontains $ef.ToLowerInvariant()) {
+                [void]$Errors.Add("${PathLabel}[$ei].effect: unknown ($($script:PptAnimateEntranceEffects -join ', '))")
+            }
+        }
+        if ($null -ne $row.by -and $row.by -is [string]) {
+            $by = [string]$row.by
+            if ($by.Trim() -ne '' -and $script:PptAnimateStepBy -notcontains $by.ToLowerInvariant()) {
+                [void]$Errors.Add("${PathLabel}[$ei].by: use shape or paragraph")
+            }
+        }
+        if ($null -ne $row.trigger -and $row.trigger -is [string]) {
+            $tr = [string]$row.trigger
+            if ($tr.Trim() -ne '' -and $script:PptAnimateStepTrigger -notcontains $tr.ToLowerInvariant()) {
+                [void]$Errors.Add("${PathLabel}[$ei].trigger: use click, withPrevious, or afterPrevious")
+            }
+        }
+        foreach ($numk in @('duration', 'delay', 'level')) {
+            if ($null -eq $row.$numk) { continue }
+            try {
+                [void][double]::Parse([string]$row.$numk, [System.Globalization.CultureInfo]::InvariantCulture)
+            } catch {
+                [void]$Errors.Add("${PathLabel}[$ei].${numk}: must be a number if present")
+            }
+        }
+    }
+}
 
 function Test-PptOptionalHexColor {
     param([string]$Val)
@@ -218,8 +305,23 @@ function Test-PptDeckSpecObject {
         }
         if ($sl.transition) {
             $tv = [string]$sl.transition
-            if ($tv.ToLowerInvariant() -notin @('none', 'fade', 'push', 'wipe', 'cut', 'uncover')) {
-                [void]$errors.Add("slides[$idx].transition: unknown effect (fade, push, wipe, cut, uncover, none)")
+            if ($script:PptTransitionEffects -notcontains $tv.ToLowerInvariant()) {
+                [void]$errors.Add("slides[$idx].transition: unknown effect ($($script:PptTransitionEffects -join ', '))")
+            }
+        }
+        if ($sl.animateEffect) {
+            $ae = [string]$sl.animateEffect
+            if ($script:PptAnimateEntranceEffects -notcontains $ae.ToLowerInvariant()) {
+                [void]$errors.Add("slides[$idx].animateEffect: unknown ($($script:PptAnimateEntranceEffects -join ', '))")
+            }
+        }
+        if ($null -ne $sl.animateSteps) {
+            Test-PptAnimateStepsList -Steps $sl.animateSteps -PathLabel "slides[$idx].animateSteps" -Errors $errors
+        }
+        if ($sl.imageZOrder) {
+            $iz = [string]$sl.imageZOrder
+            if ($iz.ToLowerInvariant() -notin @('back', 'front')) {
+                [void]$errors.Add('slides[$idx].imageZOrder: use back or front')
             }
         }
         $loLower = $lo.ToLowerInvariant()
@@ -435,9 +537,18 @@ function Test-PptDeckSpecObject {
         }
         if ($th.defaultTransition) {
             $dv = [string]$th.defaultTransition
-            if ($dv.ToLowerInvariant() -notin @('none', 'fade', 'push', 'wipe', 'cut', 'uncover')) {
+            if ($script:PptTransitionEffects -notcontains $dv.ToLowerInvariant()) {
                 [void]$errors.Add('theme.defaultTransition: unknown effect')
             }
+        }
+        if ($th.defaultAnimateEffect) {
+            $de = [string]$th.defaultAnimateEffect
+            if ($script:PptAnimateEntranceEffects -notcontains $de.ToLowerInvariant()) {
+                [void]$errors.Add("theme.defaultAnimateEffect: unknown ($($script:PptAnimateEntranceEffects -join ', '))")
+            }
+        }
+        if ($null -ne $th.defaultAnimateSteps) {
+            Test-PptAnimateStepsList -Steps $th.defaultAnimateSteps -PathLabel 'theme.defaultAnimateSteps' -Errors $errors
         }
     }
 

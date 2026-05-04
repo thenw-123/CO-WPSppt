@@ -77,5 +77,17 @@ function Add-WpsSlidePictureFromSpec {
         [double]$SlideWidth = 960.0
     )
     $g = Resolve-WpsSlideImagePlacement -SlideSpec $SlideSpec -SlideWidth $SlideWidth
-    return Add-WpsSlidePicture -Slide $Slide -ImagePath $ImagePath -Left $g.Left -Top $g.Top -Width $g.Width -Height $g.Height
+    $pic = Add-WpsSlidePicture -Slide $Slide -ImagePath $ImagePath -Left $g.Left -Top $g.Top -Width $g.Width -Height $g.Height
+    $z = 'back'
+    if ($SlideSpec -and $null -ne $SlideSpec.imageZOrder) {
+        $iz = [string]$SlideSpec.imageZOrder
+        if ($iz.Trim().ToLowerInvariant() -eq 'front') { $z = 'front' }
+    }
+    if ($z -eq 'back') {
+        try {
+            # msoSendToBack = 1 — keeps text/placeholders above the photo when shapes overlap
+            $pic.ZOrder(1)
+        } catch { }
+    }
+    return $pic
 }

@@ -1,0 +1,617 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://openclaw.local/schemas/ppt-dsl-v2.schema.json",
+  "title": "PPT DSL v2",
+  "description": "Semantic deck description for AI-generated presentations. The DSL describes intent, content, visual preferences, and assets; renderers decide concrete WPS COM operations.",
+  "type": "object",
+  "required": ["dslVersion", "meta", "slides"],
+  "additionalProperties": false,
+  "properties": {
+    "dslVersion": {
+      "type": "string",
+      "const": "2.0",
+      "description": "DSL contract version."
+    },
+    "meta": {
+      "$ref": "#/definitions/meta"
+    },
+    "theme": {
+      "$ref": "#/definitions/theme",
+      "description": "Deck-wide visual tokens. If omitted, renderer uses its default theme."
+    },
+    "defaults": {
+      "$ref": "#/definitions/defaults",
+      "description": "Deck-wide behavior defaults inherited by slides and elements."
+    },
+    "slides": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/slide" }
+    }
+  },
+  "definitions": {
+    "meta": {
+      "type": "object",
+      "required": ["title"],
+      "additionalProperties": false,
+      "properties": {
+        "title": { "type": "string", "minLength": 1 },
+        "subtitle": { "type": "string" },
+        "audience": { "type": "string" },
+        "purpose": {
+          "type": "string",
+          "description": "Presentation goal, such as decision, teaching, review, defense, or sales."
+        },
+        "language": {
+          "type": "string",
+          "default": "zh-CN"
+        },
+        "author": { "type": "string" },
+        "savePath": {
+          "type": "string",
+          "description": "Relative or absolute .pptx output path."
+        },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "theme": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "preset": {
+          "type": "string",
+          "enum": ["business-blue", "clean-light", "dark-executive", "academic", "custom"],
+          "default": "business-blue"
+        },
+        "template": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": { "type": "string" },
+            "path": { "type": "string" },
+            "variant": { "type": "string" }
+          },
+          "description": "Optional template reference. A renderer may map it to .thmx or a PPT template."
+        },
+        "fonts": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "title": { "type": "string" },
+            "body": { "type": "string" },
+            "mono": { "type": "string" }
+          }
+        },
+        "colors": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "primary": { "$ref": "#/definitions/color" },
+            "secondary": { "$ref": "#/definitions/color" },
+            "accent": { "$ref": "#/definitions/color" },
+            "background": { "$ref": "#/definitions/color" },
+            "surface": { "$ref": "#/definitions/color" },
+            "title": { "$ref": "#/definitions/color" },
+            "body": { "$ref": "#/definitions/color" },
+            "muted": { "$ref": "#/definitions/color" }
+          }
+        },
+        "motion": {
+          "$ref": "#/definitions/motion"
+        }
+      }
+    },
+    "defaults": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "layout": {
+          "type": "string",
+          "default": "auto",
+          "description": "auto lets renderer select a layout from slide type and elements."
+        },
+        "imagePlacement": {
+          "type": "string",
+          "enum": ["auto", "right", "bottom", "fullBleed"],
+          "default": "auto"
+        },
+        "chartEngine": {
+          "type": "string",
+          "enum": ["auto", "png", "com"],
+          "default": "auto"
+        },
+        "assetFetch": {
+          "$ref": "#/definitions/assetFetch"
+        }
+      }
+    },
+    "slide": {
+      "type": "object",
+      "required": ["type", "elements"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["cover", "agenda", "section", "content", "left-image", "argument", "comparison", "timeline", "data", "swot", "custom"],
+          "description": "Semantic slide type. It drives default layout selection and validation."
+        },
+        "title": {
+          "type": "string",
+          "description": "Convenience semantic title. Renderers may derive it from a title text element if omitted."
+        },
+        "message": {
+          "type": "string",
+          "description": "One-sentence takeaway. Used by planners and may be rendered as title/subtitle depending on layout."
+        },
+        "layout": {
+          "$ref": "#/definitions/layout"
+        },
+        "style": {
+          "$ref": "#/definitions/style"
+        },
+        "elements": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/definitions/element" },
+          "description": "Semantic content blocks. Element order is reading/narrative order, not drawing order."
+        },
+        "notes": {
+          "type": "string"
+        },
+        "motion": {
+          "$ref": "#/definitions/motion"
+        },
+        "constraints": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "maxBullets": { "type": "integer", "minimum": 1 },
+            "maxTextLines": { "type": "integer", "minimum": 1 },
+            "mustFitOneSlide": { "type": "boolean", "default": true }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "type": { "const": "cover" } } },
+          "then": {
+            "description": "cover should contain at least a title text element or slide.title."
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "data" } } },
+          "then": {
+            "description": "data slides normally contain a chart or table element plus insight text."
+          }
+        }
+      ]
+    },
+    "layout": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "default": "auto",
+          "enum": [
+            "auto",
+            "title",
+            "title-content",
+            "section",
+            "two-column",
+            "three-column",
+            "image-right",
+            "left-image",
+            "image-bottom",
+            "full-bleed-image",
+            "comparison-matrix",
+            "timeline-horizontal",
+            "claim-with-evidence",
+            "swot-grid",
+            "data-insight",
+            "grid",
+            "comparison",
+            "custom"
+          ]
+        },
+        "density": {
+          "type": "string",
+          "enum": ["compact", "normal", "spacious"],
+          "default": "normal"
+        },
+        "templateSlot": {
+          "type": "string",
+          "description": "Optional semantic slot in a template, not a COM placeholder index."
+        },
+        "columns": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8,
+          "description": "Column count for grid / card layouts (typically 2–4)."
+        },
+        "gap": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Gap between grid cells in layout units (slide points)."
+        },
+        "card": {
+          "$ref": "#/definitions/cardChrome",
+          "description": "Default card chrome (fill, corner, padding); per-element style.card overrides."
+        }
+      },
+      "description": "Visual layout preference. Omit or set name=auto to let renderer choose."
+    },
+    "element": {
+      "type": "object",
+      "required": ["type"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["text", "bullets", "image", "chart", "table"]
+        },
+        "role": {
+          "type": "string",
+          "enum": ["title", "subtitle", "body", "claim", "evidence", "insight", "caption", "quote", "footer", "decorative"],
+          "default": "body",
+          "description": "Semantic role, used by layout and style resolvers."
+        },
+        "text": {
+          "type": "string",
+          "description": "For text element."
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              { "type": "string" },
+              { "$ref": "#/definitions/bulletItem" }
+            ]
+          },
+          "description": "For bullets element (preferred)."
+        },
+        "content": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "items": {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  { "type": "string" },
+                  { "$ref": "#/definitions/bulletItem" }
+                ]
+              }
+            }
+          },
+          "description": "Alternate bullets payload (e.g. content.items)."
+        },
+        "source": {
+          "$ref": "#/definitions/imageSource",
+          "description": "For image element."
+        },
+        "chart": {
+          "$ref": "#/definitions/chartSpec",
+          "description": "For chart element."
+        },
+        "table": {
+          "$ref": "#/definitions/tableSpec",
+          "description": "For table element."
+        },
+        "style": {
+          "$ref": "#/definitions/style"
+        },
+        "layoutHint": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "placement": {
+              "type": "string",
+              "enum": ["auto", "left", "right", "top", "bottom", "center", "background", "fullBleed"],
+              "default": "auto"
+            },
+            "emphasis": {
+              "type": "string",
+              "enum": ["low", "normal", "high"],
+              "default": "normal"
+            },
+            "span": {
+              "type": "string",
+              "enum": ["auto", "full", "half", "third"],
+              "default": "auto"
+            }
+          }
+        },
+        "alt": {
+          "type": "string",
+          "description": "Accessibility/semantic description for visual elements."
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "type": { "const": "text" } } },
+          "then": { "required": ["text"] }
+        },
+        {
+          "if": { "properties": { "type": { "const": "bullets" } } },
+          "then": {
+            "anyOf": [
+              { "required": ["items"] },
+              { "required": ["content"] }
+            ]
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "image" } } },
+          "then": { "required": ["source"] }
+        },
+        {
+          "if": { "properties": { "type": { "const": "chart" } } },
+          "then": { "required": ["chart"] }
+        },
+        {
+          "if": { "properties": { "type": { "const": "table" } } },
+          "then": { "required": ["table"] }
+        }
+      ]
+    },
+    "bulletItem": {
+      "type": "object",
+      "required": ["text"],
+      "additionalProperties": false,
+      "properties": {
+        "text": { "type": "string" },
+        "level": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3,
+          "default": 1
+        },
+        "evidence": { "type": "string" }
+      }
+    },
+    "imageSource": {
+      "type": "object",
+      "required": ["kind"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["local", "remote", "commons", "generated", "template"]
+        },
+        "path": { "type": "string" },
+        "url": { "type": "string" },
+        "title": { "type": "string" },
+        "prompt": { "type": "string" },
+        "assetId": { "type": "string" },
+        "credit": { "type": "string" },
+        "policy": {
+          "type": "string",
+          "enum": ["default", "trustedCdn", "strict"],
+          "default": "default"
+        }
+      }
+    },
+    "chartSpec": {
+      "type": "object",
+      "required": ["kind", "data"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["bar", "line", "donut", "pie", "area", "scatter"]
+        },
+        "title": { "type": "string" },
+        "data": {
+          "type": "object",
+          "required": ["labels", "series"],
+          "additionalProperties": false,
+          "properties": {
+            "labels": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "type": "string" }
+            },
+            "series": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": ["values"],
+                "additionalProperties": false,
+                "properties": {
+                  "name": { "type": "string" },
+                  "values": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": { "type": "number" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "encoding": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "x": { "type": "string" },
+            "y": { "type": "string" },
+            "color": { "type": "string" }
+          }
+        },
+        "insight": {
+          "type": "string",
+          "description": "Natural-language conclusion the chart should support."
+        },
+        "render": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "engine": {
+              "type": "string",
+              "enum": ["auto", "png", "com"],
+              "default": "auto"
+            },
+            "fallback": {
+              "type": "string",
+              "enum": ["text", "png", "none"],
+              "default": "text"
+            }
+          }
+        }
+      }
+    },
+    "tableSpec": {
+      "type": "object",
+      "required": ["columns", "rows"],
+      "additionalProperties": false,
+      "properties": {
+        "title": { "type": "string" },
+        "columns": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": ["string", "number", "boolean", "null"]
+            }
+          }
+        },
+        "highlight": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "rows": {
+              "type": "array",
+              "items": { "type": "integer", "minimum": 0 }
+            },
+            "columns": {
+              "type": "array",
+              "items": { "type": "integer", "minimum": 0 }
+            }
+          }
+        }
+      }
+    },
+    "style": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "variant": {
+          "type": "string",
+          "enum": ["default", "primary", "secondary", "accent", "muted", "danger", "success"],
+          "default": "default"
+        },
+        "background": { "$ref": "#/definitions/color" },
+        "color": { "$ref": "#/definitions/color" },
+        "fontSize": {
+          "type": "number",
+          "minimum": 6
+        },
+        "weight": {
+          "type": "string",
+          "enum": ["regular", "medium", "bold"]
+        },
+        "card": {
+          "$ref": "#/definitions/cardChrome"
+        }
+      }
+    },
+    "motion": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "transition": {
+          "type": "string",
+          "enum": ["none", "fade", "push", "wipe", "cut", "uncover", "split", "cover", "random", "blinds", "dissolve"],
+          "default": "none"
+        },
+        "duration": {
+          "type": "number",
+          "minimum": 0,
+          "default": 0.55
+        },
+        "build": {
+          "type": "string",
+          "enum": ["none", "byElement", "byParagraph"],
+          "default": "none"
+        },
+        "effect": {
+          "type": "string",
+          "enum": ["fade", "appear", "fly", "float", "wipe", "zoom"],
+          "default": "fade"
+        }
+      }
+    },
+    "assetFetch": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "allowedHosts": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "maxBytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "timeoutSec": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxRedirects": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "softFail": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "cardChrome": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "surface": {
+          "type": "string",
+          "enum": ["none", "muted", "elevated", "accent"],
+          "description": "Preset card fill/border; optional with explicit colors."
+        },
+        "background": { "$ref": "#/definitions/color" },
+        "borderColor": { "$ref": "#/definitions/color" },
+        "padding": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Inner padding between card chrome and text (points)."
+        },
+        "cornerRadius": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 0.45,
+          "description": "Rounded-corner intensity for COM rounded rectangle (0–0.45)."
+        }
+      }
+    },
+    "color": {
+      "type": "string",
+      "pattern": "^#?[0-9A-Fa-f]{6}$"
+    }
+  }
+}

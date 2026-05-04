@@ -1,0 +1,64 @@
+{
+  "dslVersion": "2.0",
+  "meta": {
+    "title": "Layout Engine Minimal Demo",
+    "savePath": "output/layout-engine-minimal.pptx"
+  },
+  "theme": {
+    "preset": "business-blue",
+    "fonts": {
+      "title": "Microsoft YaHei",
+      "body": "Microsoft YaHei"
+    }
+  },
+  "slides": [
+    {
+      "id": "title-content",
+      "type": "content",
+      "layout": { "name": "title-content" },
+      "elements": [
+        {
+          "id": "title",
+          "type": "text",
+          "role": "title",
+          "text": "标题 + 内容布局"
+        },
+        {
+          "id": "body",
+          "type": "bullets",
+          "role": "body",
+          "items": ["标题区域固定在顶部", "正文区域自动垂直排列", "Renderer 只执行坐标操作"]
+        }
+      ]
+    },
+    {
+      "id": "image-right",
+      "type": "content",
+      "layout": { "name": "image-right" },
+      "elements": [
+        {
+          "id": "title",
+          "type": "text",
+          "role": "title",
+          "text": "左文本 + 右图片布局"
+        },
+        {
+          "id": "points",
+          "type": "bullets",
+          "role": "body",
+          "items": ["左侧保留 50% 文本区域", "右侧保留 50% 图片区域"]
+        },
+        {
+          "id": "image",
+          "type": "image",
+          "role": "decorative",
+          "source": {
+            "kind": "local",
+            "path": "docs/diagrams/co-wpsppt-flow.svg"
+          },
+          "alt": "示例图片占位"
+        }
+      ]
+    }
+  ]
+}

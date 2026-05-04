@@ -13,7 +13,7 @@
 `openclaw_invoke` 参数要点：
 
 - **`tool`**（必填）：`wps-ppt`
-- **`action`**：与根目录 [manifest.json](../manifest.json) 里 `actions[].name` 一致，例如 `run-spec`、`validate-spec`、`doctor`
+- **`action`**：与根目录 [manifest.json](../manifest.json) 里 `actions[].name` 一致，例如 `run-spec`、`compile-dsl`、`run-dsl`、`validate-spec`、`doctor`
 - **`args_json`**：一行 JSON 字符串，例如校验 spec：  
   `{"specPath":"specs/example-spec.json"}`  
   路径一般相对**网关执行时的工程根**；若网关以本仓库为根，则与仓库内 `specs/` 一致。
@@ -31,7 +31,8 @@
 - 「先 **`openclaw_discover`**，确认有没有 **`wps-ppt`**。」
 - 「用 **`openclaw_skill`** 查 **`wps-ppt`** 的 action 列表。」
 - 「**`openclaw_invoke`**：`tool` = `wps-ppt`，`action` = `validate-spec`，`args_json` = `{\"specPath\":\"examples/decks/art-philosophy-beauty.json\"}`。」
-- 「同上，`action` 改成 `run-spec` 生成 pptx。」
+- 「同上，`action` 改成 `run-spec` 生成 legacy spec 的 pptx。」
+- 「三层架构新入口：`action` = `compile-dsl` 或 `run-dsl`，`args_json` = `{\"dslPath\":\"specs/dsl/example-dsl.json\"}`。」
 
 注意：`args_json` 在部分客户端里需转义引号；若 Gateway 走 Shell 模板，需与 [manifest.json](../manifest.json) 里 `preferredDispatch` 的 JSON 约定一致。
 

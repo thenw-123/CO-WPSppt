@@ -1,0 +1,63 @@
+{
+  "outlineVersion": "1.0",
+  "meta": {
+    "title": "AI 生成 PPT 的 WPS 插件架构重构",
+    "audience": "工程团队和技术负责人",
+    "purpose": "说明架构重构方案并对齐后续实现",
+    "scenario": "report",
+    "language": "zh-CN",
+    "targetSlideCount": 3
+  },
+  "themeIntent": {
+    "tone": "business",
+    "visualStyle": "clean"
+  },
+  "slides": [
+    {
+      "slideId": "cover",
+      "type": "cover",
+      "layout": { "name": "title" },
+      "message": "用三层架构稳定生成 PPT",
+      "contentIntent": {
+        "goal": "建立主题和汇报对象",
+        "mustInclude": ["项目名称", "三层架构关键词"],
+        "avoid": ["技术细节展开"]
+      },
+      "elementPlan": [
+        { "type": "text", "role": "title" },
+        { "type": "text", "role": "subtitle" }
+      ]
+    },
+    {
+      "slideId": "current-problems",
+      "type": "argument",
+      "layout": { "name": "claim-with-evidence" },
+      "message": "当前低级 JSON 管线不稳定",
+      "contentIntent": {
+        "goal": "说明为什么需要重构",
+        "mustInclude": ["脚本碎片化", "agent 直接生成 JSON", "扩展困难"],
+        "avoid": ["责备历史实现"]
+      },
+      "elementPlan": [
+        { "type": "text", "role": "claim" },
+        { "type": "bullets", "role": "evidence" },
+        { "type": "text", "role": "insight" }
+      ]
+    },
+    {
+      "slideId": "three-layer-architecture",
+      "type": "comparison",
+      "layout": { "name": "comparison-matrix" },
+      "message": "三层架构解耦规划和渲染",
+      "contentIntent": {
+        "goal": "解释 Intent、DSL、Renderer 的职责边界",
+        "mustInclude": ["Intent Layer", "DSL Layer", "Renderer Layer"],
+        "avoid": ["代码细节"]
+      },
+      "elementPlan": [
+        { "type": "text", "role": "title" },
+        { "type": "table", "role": "body" }
+      ]
+    }
+  ]
+}

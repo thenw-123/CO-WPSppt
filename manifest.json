@@ -1,6 +1,6 @@
 {
   "tool": "wps-ppt",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "Drive WPS Presentation via Kwpp.Application COM. Narrative layouts: timeline, comparison, thesis-chain, argument, thesis-vertical (3-step), SWOT 2×2. Prefer tools/wps_dispatch.ps1 -Action run-spec.",
   "preferredDispatch": {
     "script": "tools/wps_dispatch.ps1",
@@ -74,10 +74,40 @@
       "args": ["specPath?", "spec?", "skipValidation?"]
     },
     {
+      "name": "compile-dsl",
+      "script": "tools/wps_compile_dsl.ps1",
+      "description": "Compile high-level PPT DSL to a renderer plan or legacy spec without starting WPS",
+      "args": ["dslPath?", "dsl?", "format?"]
+    },
+    {
+      "name": "run-dsl",
+      "script": "tools/wps_run_dsl.ps1",
+      "description": "Build full deck from high-level PPT DSL through RenderPlan and WPS COM",
+      "args": ["dslPath?", "dsl?"]
+    },
+    {
+      "name": "edit-dsl",
+      "script": "tools/wps_edit_dsl.ps1",
+      "description": "Apply PPT Edit DSL v1 to a PPT DSL v2 file; optionally run full run-dsl after edit",
+      "args": ["editPath?", "edit?", "dslPath?", "outPath?", "validateAfterEdit?", "renderAfterEdit?"]
+    },
+    {
+      "name": "render-edit",
+      "script": "tools/wps_render_edit.ps1",
+      "description": "Apply PPT Edit DSL v1 and rebuild only affected slides in an existing PPTX using the sidecar slide map",
+      "args": ["editPath?", "edit?", "dslPath?", "presentationPath", "mapPath?"]
+    },
+    {
       "name": "validate-spec",
       "script": "tools/wps_validate_spec.ps1",
       "description": "Validate spec JSON structure (no WPS); returns errors array on failure",
       "args": ["specPath?", "spec?"]
+    },
+    {
+      "name": "validate-agent",
+      "script": "tools/wps_validate_agent.ps1",
+      "description": "Validate two-stage Agent output: Planner outline or Writer PPT DSL v2",
+      "args": ["stage", "outlinePath?", "outline?", "dslPath?", "dsl?"]
     },
     {
       "name": "doctor",
