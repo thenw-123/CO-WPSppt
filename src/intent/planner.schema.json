@@ -1,0 +1,138 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://openclaw.local/schemas/planner-outline-v1.schema.json",
+  "title": "Planner Agent Outline",
+  "description": "Stable outline emitted by Planner Agent before Writer Agent fills PPT DSL v2 content.",
+  "type": "object",
+  "required": ["outlineVersion", "meta", "themeIntent", "slides"],
+  "additionalProperties": false,
+  "properties": {
+    "outlineVersion": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "meta": {
+      "type": "object",
+      "required": ["title", "audience", "purpose", "scenario", "language", "targetSlideCount"],
+      "additionalProperties": false,
+      "properties": {
+        "title": { "type": "string", "minLength": 1 },
+        "audience": { "type": "string", "minLength": 1 },
+        "purpose": { "type": "string", "minLength": 1 },
+        "scenario": {
+          "type": "string",
+          "enum": ["defense", "report", "project-showcase"]
+        },
+        "language": {
+          "type": "string",
+          "default": "zh-CN"
+        },
+        "targetSlideCount": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 80
+        }
+      }
+    },
+    "themeIntent": {
+      "type": "object",
+      "required": ["tone", "visualStyle"],
+      "additionalProperties": false,
+      "properties": {
+        "tone": {
+          "type": "string",
+          "enum": ["academic", "business", "executive", "product"]
+        },
+        "visualStyle": {
+          "type": "string",
+          "enum": ["clean", "formal", "modern", "data-driven"]
+        }
+      }
+    },
+    "slides": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/outlineSlide" }
+    }
+  },
+  "definitions": {
+    "outlineSlide": {
+      "type": "object",
+      "required": ["slideId", "type", "layout", "message", "contentIntent", "elementPlan"],
+      "additionalProperties": false,
+      "properties": {
+        "slideId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["cover", "agenda", "section", "content", "argument", "comparison", "timeline", "data", "swot", "custom"]
+        },
+        "layout": {
+          "type": "object",
+          "required": ["name"],
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": "string",
+              "enum": [
+                "auto",
+                "title",
+                "title-content",
+                "section",
+                "two-column",
+                "image-right",
+                "comparison-matrix",
+                "timeline-horizontal",
+                "claim-with-evidence",
+                "swot-grid",
+                "data-insight"
+              ]
+            }
+          }
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "contentIntent": {
+          "type": "object",
+          "required": ["goal", "mustInclude", "avoid"],
+          "additionalProperties": false,
+          "properties": {
+            "goal": { "type": "string", "minLength": 1 },
+            "mustInclude": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "avoid": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        },
+        "elementPlan": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["type", "role"],
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["text", "bullets", "image", "chart", "table"]
+              },
+              "role": {
+                "type": "string",
+                "enum": ["title", "subtitle", "body", "claim", "evidence", "insight", "caption", "quote", "footer", "decorative"]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

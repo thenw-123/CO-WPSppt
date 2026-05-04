@@ -66,18 +66,29 @@ try {
         comProgIdRegistered = $comRegistry
         comLive        = $null
         comLiveError   = $null
+        comAnimationProbe = $null
+        comAnimationProbeError = $null
         chartPng       = $chartPng
         assetFetchInsecureHttpAllowed = ($env:OC_ASSET_FETCH_ALLOW_HTTP -eq '1')
     }
 
     if ($comProbe) {
+        . (Join-Path $ProjectRoot 'wps-driver\Wps.Connect.ps1')
+        . (Join-Path $ProjectRoot 'wps-driver\Wps.Polish.ps1')
+        $app = $null
         try {
-            . (Join-Path $ProjectRoot 'wps-driver\Wps.Connect.ps1')
-            $null = Get-WpsApplication
+            $app = Get-WpsApplication
             $data.comLive = $true
         } catch {
             $data.comLive = $false
             $data.comLiveError = $_.Exception.Message
+        }
+        if ($null -ne $app) {
+            try {
+                $data.comAnimationProbe = (Invoke-WpsComAnimationCapabilityProbe -App $app)
+            } catch {
+                $data.comAnimationProbeError = $_.Exception.Message
+            }
         }
     }
 

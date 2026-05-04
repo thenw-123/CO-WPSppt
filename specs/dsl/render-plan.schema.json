@@ -1,9 +1,9 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "WPS-PPT render plan",
-  "description": "Renderer-facing plan. In phase 1 it wraps a compiled legacy spec while preserving a stable renderer contract.",
+  "description": "Renderer-facing plan produced by the Layout Engine. It contains atomic operations with concrete coordinates.",
   "type": "object",
-  "required": ["renderPlanVersion", "renderer", "legacySpec"],
+  "required": ["renderPlanVersion", "renderer", "slides"],
   "properties": {
     "renderPlanVersion": {
       "type": "string",
@@ -11,7 +11,7 @@
     },
     "renderer": {
       "type": "string",
-      "enum": ["wps-com"]
+      "enum": ["wps-com-atomic"]
     },
     "source": {
       "type": "object",
@@ -20,9 +20,58 @@
         "compiledAt": { "type": "string" }
       }
     },
-    "legacySpec": {
+    "page": {
       "type": "object",
-      "description": "Legacy ppt-spec consumed by the current PowerShell WPS renderer."
+      "properties": {
+        "width": { "type": "number" },
+        "height": { "type": "number" }
+      }
+    },
+    "slides": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["slideId", "index", "layout", "operations"],
+        "properties": {
+          "slideId": { "type": "string" },
+          "index": { "type": "integer" },
+          "layout": { "type": "object" },
+          "operations": {
+            "type": "array",
+            "items": { "$ref": "#/definitions/operation" }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "box": {
+      "type": "object",
+      "required": ["x", "y", "w", "h"],
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "w": { "type": "number" },
+        "h": { "type": "number" }
+      }
+    },
+    "operation": {
+      "type": "object",
+      "required": ["op", "elementId", "box"],
+      "properties": {
+        "op": { "type": "string", "enum": ["addText", "addBullets", "addImage", "addRoundedRect"] },
+        "elementId": { "type": "string" },
+        "role": { "type": "string" },
+        "text": { "type": "string" },
+        "items": { "type": "array", "items": { "type": "string" } },
+        "source": { "type": "object" },
+        "fill": { "type": "string" },
+        "stroke": { "type": "string" },
+        "strokeVisible": { "type": "boolean" },
+        "cornerAdjustment": { "type": "number" },
+        "box": { "$ref": "#/definitions/box" },
+        "style": { "type": "object" }
+      }
     }
   }
 }

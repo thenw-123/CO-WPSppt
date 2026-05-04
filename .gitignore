@@ -24,3 +24,6 @@ extension/*.vsix
 *.vsix
 !releases/*.vsix
 node_modules/
+
+# Cursor local planning (not part of product source)
+.cursor/plans/

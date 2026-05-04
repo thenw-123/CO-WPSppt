@@ -17,7 +17,10 @@ $map = [ordered]@{
     'run-spec'       = 'wps_run_spec.ps1'
     'compile-dsl'    = 'wps_compile_dsl.ps1'
     'run-dsl'        = 'wps_run_dsl.ps1'
+    'edit-dsl'       = 'wps_edit_dsl.ps1'
+    'render-edit'    = 'wps_render_edit.ps1'
     'validate-spec'  = 'wps_validate_spec.ps1'
+    'validate-agent' = 'wps_validate_agent.ps1'
     'doctor'         = 'wps_doctor.ps1'
     'exec'           = 'wps_exec.ps1'
 }

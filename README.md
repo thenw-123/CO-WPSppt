@@ -65,6 +65,17 @@ cd <仓库根目录>
 
 `openclaw_discover` → 确认有 **`wps-ppt`** → **`openclaw_invoke`**（`action` / `args_json` 同上）。排错与注册 `manifest.json` 见 **[docs/MCP-OpenClaw与wps-ppt.md](docs/MCP-OpenClaw与wps-ppt.md)**。
 
+### 三层架构 DSL（Intent / DSL / Renderer）
+
+新管线让 agent 生成高层 **PPT DSL**，再编译到 Renderer 可执行的计划；旧 `run-spec` 仍保持兼容。示例：
+
+```powershell
+.\tools\wps_dispatch.ps1 -Action compile-dsl -ArgsJson '{"dslPath":"specs/dsl/example-dsl.json"}'
+.\tools\wps_dispatch.ps1 -Action run-dsl -ArgsJson '{"dslPath":"specs/dsl/example-dsl.json"}'
+```
+
+DSL schema 见 [specs/dsl/ppt-dsl.schema.json](specs/dsl/ppt-dsl.schema.json)，架构说明见 [docs/ARCHITECTURE-3LAYER.md](docs/ARCHITECTURE-3LAYER.md)。当前阶段 `run-dsl` 会编译为 RenderPlan，并通过 legacy spec 复用现有 WPS COM 渲染能力。
+
 ### 升级版 `run-spec` 能做什么
 
 - **演讲者备注**：每页可选 `notes`，也可事后 `set-notes`。
@@ -73,7 +84,7 @@ cd <仓库根目录>
 - **叙事版式（1.5+）**：`layout` 可为 `timeline`、`comparison`、`thesis-chain`、`argument`、`thesis-vertical`（**一页一论题 · 竖向三步**）、`swot`（**四象限**）；在空白幻灯片上排形状以减轻版式重复；见 Schema 与 [specs/narrative-layouts-demo.json](specs/narrative-layouts-demo.json)。
 - **结构校验**：`run-spec` 默认先做 spec 校验（与 [specs/ppt-spec.schema.json](specs/ppt-spec.schema.json) 对齐）；`args_json` 里设 `skipValidation: true` 可跳过（不推荐）。
 - **validate-spec**：仅校验 JSON、不启动 WPS；失败时 `data.errors` 为字符串数组，`code` 为 `VALIDATION_FAILED`。
-- **doctor**：检查工程路径、`output/` 可写、会话文件、各 ProgID 是否注册；`{"comProbe":true}` 时会尝试 `Get-WpsApplication`（可能拉起 WPS）。
+- **doctor**：检查工程路径、`output/` 可写、会话文件、各 ProgID 是否注册；`{"comProbe":true}` 时会尝试 `Get-WpsApplication`（可能拉起 WPS），并写入 **`comAnimationProbe`**：在本机新建临时演示稿上探测 `SlideShowTransition`、`TimeLine.MainSequence`、`AddEffect` 是否可用；各子项含 **`ok` / `error`（可读 COM 信息）**；关闭文稿时偶发 **`probeCloseError`**（多为 RPC，不影响前面探测结论）。
 - **可读输出**：调试时设环境变量 `OC_PRETTY_JSON=1`，stdout JSON 会换行缩进。
 
 ### PNG 图表（L1，优先于 COM 内嵌图）

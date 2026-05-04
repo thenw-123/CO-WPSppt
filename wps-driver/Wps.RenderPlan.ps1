@@ -1,19 +1,11 @@
-# Renderer-facing plan helpers. Phase 1 keeps WPS COM execution behind the
-# existing legacy spec renderer, but callers now depend on RenderPlan.
+# Renderer-facing plan helpers. RenderPlan is the execution source. The normal
+# path is DSL -> Layout Engine -> atomic operations; legacySpec remains only as
+# an explicit compatibility format.
 
 function Convert-PptDslToRenderPlan {
     param([object]$Dsl)
 
-    $legacy = Convert-PptDslToLegacySpec -Dsl $Dsl
-    return [ordered]@{
-        renderPlanVersion = '1.0'
-        renderer          = 'wps-com'
-        source            = [ordered]@{
-            dslVersion = [string]$Dsl.dslVersion
-            compiledAt = (Get-Date).ToUniversalTime().ToString('o')
-        }
-        legacySpec        = $legacy
-    }
+    return Convert-PptDslToAtomicRenderPlan -Dsl $Dsl
 }
 
 function Test-PptRenderPlanObject {
@@ -27,11 +19,15 @@ function Test-PptRenderPlanObject {
     if ([string]$RenderPlan.renderPlanVersion -ne '1.0') {
         [void]$errors.Add('renderPlanVersion: expected 1.0')
     }
-    if ([string]$RenderPlan.renderer -ne 'wps-com') {
-        [void]$errors.Add('renderer: expected wps-com')
+    if ([string]$RenderPlan.renderer -notin @('wps-com-atomic', 'wps-com')) {
+        [void]$errors.Add('renderer: expected wps-com-atomic')
     }
-    if ($null -eq $RenderPlan.legacySpec) {
-        [void]$errors.Add('legacySpec: required in phase 1 render plans')
+    if ([string]$RenderPlan.renderer -eq 'wps-com-atomic') {
+        if ($null -eq $RenderPlan.slides) {
+            [void]$errors.Add('slides: required for atomic render plans')
+        }
+    } elseif ($null -eq $RenderPlan.legacySpec) {
+        [void]$errors.Add('legacySpec: required for legacy render plans')
     }
     return $errors
 }
@@ -45,6 +41,9 @@ function Invoke-WpsDeckFromRenderPlan {
     $errors = Test-PptRenderPlanObject -RenderPlan $RenderPlan
     if ($errors.Count -gt 0) {
         throw "RenderPlan validation failed: $($errors -join '; ')"
+    }
+    if ([string]$RenderPlan.renderer -eq 'wps-com-atomic') {
+        return Invoke-WpsDeckFromAtomicRenderPlan -RenderPlan $RenderPlan -ProjectRoot $ProjectRoot
     }
     return Invoke-WpsDeckFromSpec -Spec $RenderPlan.legacySpec -ProjectRoot $ProjectRoot
 }

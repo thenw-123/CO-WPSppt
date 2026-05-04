@@ -1,5 +1,100 @@
 # Speaker notes, optional theme file, and typography pass (best-effort for WPS COM)
 
+function Format-WpsComException {
+    param($Err)
+    if ($null -eq $Err) { return 'unknown error' }
+    $ex = $Err
+    if ($Err -is [System.Management.Automation.ErrorRecord]) {
+        $ex = $Err.Exception
+    }
+    $parts = [System.Collections.Generic.List[string]]::new()
+    if ($ex.Message) { [void]$parts.Add($ex.Message.Trim()) }
+    if ($ex.InnerException -and $ex.InnerException.Message) {
+        [void]$parts.Add(('Inner: ' + $ex.InnerException.Message.Trim()))
+    }
+    try {
+        $hrProp = $ex.GetType().GetProperty('HResult')
+        if ($hrProp) {
+            $h = $hrProp.GetValue($ex)
+            if ($null -ne $h) { [void]$parts.Add(('HResult=0x{0:X8}' -f [int]$h)) }
+        }
+    } catch { }
+    if ($parts.Count -eq 0) { return ($ex.ToString()) }
+    return ($parts -join ' | ')
+}
+
+function Invoke-WpsComAnimationCapabilityProbe {
+    <#
+    Creates a temporary unsaved presentation (does not touch wps-session.json),
+    probes SlideShowTransition + TimeLine.MainSequence + AddEffect, then closes.
+    #>
+    param($App)
+    $pres = $null
+    $out = [ordered]@{
+        slideShowTransition   = @{ ok = $false; detail = $null; error = $null }
+        timeLineMainSequence  = @{ ok = $false; detail = $null; error = $null }
+        mainSequenceAddEffect = @{ ok = $false; detail = $null; error = $null }
+    }
+    try {
+        try {
+            $pres = $App.Presentations.Add()
+        } catch {
+            $pres = $App.Presentations.Add(-1)
+        }
+        while ([int]$pres.Slides.Count -lt 1) {
+            $null = $pres.Slides.Add(1, 1)
+        }
+        $slide = $pres.Slides.Item(1)
+
+        try {
+            $tr = $slide.SlideShowTransition
+            $tr.EntryEffect = 3849
+            $tr.Duration = 0.55
+            $readBack = [int]$tr.EntryEffect
+            $out.slideShowTransition.ok = $true
+            $out.slideShowTransition.detail = @{
+                entryEffectSet = 3849
+                entryEffectReadBack = $readBack
+                duration          = [double]$tr.Duration
+            }
+        } catch {
+            $out.slideShowTransition.error = (Format-WpsComException $_)
+        }
+
+        try {
+            $seq = $slide.TimeLine.MainSequence
+            $out.timeLineMainSequence.ok = $true
+            $out.timeLineMainSequence.detail = @{ effectCount = [int]$seq.Count }
+        } catch {
+            $out.timeLineMainSequence.error = (Format-WpsComException $_)
+        }
+
+        try {
+            $sh = $null
+            try { $sh = $slide.Shapes.Title } catch { }
+            if (-not $sh) { $sh = $slide.Shapes.Item(1) }
+            $seq = $slide.TimeLine.MainSequence
+            $null = $seq.AddEffect($sh, 9, 4, 1)
+            $out.mainSequenceAddEffect.ok = $true
+            $out.mainSequenceAddEffect.detail = @{ effectCountAfter = [int]$seq.Count }
+        } catch {
+            $out.mainSequenceAddEffect.error = (Format-WpsComException $_)
+        }
+    } catch {
+        $out.probeSetupError = (Format-WpsComException $_)
+    } finally {
+        if ($null -ne $pres) {
+            try {
+                try { $pres.Saved = -1 } catch { }
+                $pres.Close()
+            } catch {
+                $out.probeCloseError = (Format-WpsComException $_)
+            }
+        }
+    }
+    return $out
+}
+
 function Convert-HexToOfficeRgbLong {
     param([string]$Hex)
     if (-not $Hex) { return $null }
@@ -248,12 +343,14 @@ function Set-WpsSlideTransitionFromSpec {
     param(
         $Slide,
         [string]$EffectName,
-        [double]$Seconds
+        [double]$Seconds,
+        [int]$SlideNumber = 0,
+        [System.Collections.Generic.List[string]]$ComWarnings = $null
     )
     if (-not $EffectName) { return }
     $n = $EffectName.Trim().ToLowerInvariant()
     if ($n -eq '' -or $n -eq 'none') { return }
-    # PpEntryEffect (common); best-effort for WPS / PowerPoint-compatible COM
+    # PpEntryEffect (Office-compatible); WPS may ignore some IDs — still best-effort
     $id = 3849
     switch ($n) {
         'fade' { $id = 3849 }
@@ -261,32 +358,81 @@ function Set-WpsSlideTransitionFromSpec {
         'wipe' { $id = 3841 }
         'cut' { $id = 257 }
         'uncover' { $id = 3851 }
+        'split' { $id = 3585 }       # ppEffectSplitHorizontalOut
+        'cover' { $id = 1281 }       # ppEffectCoverLeft
+        'random' { $id = 513 }       # ppEffectRandom
+        'blinds' { $id = 769 }       # ppEffectBlindsHorizontal
+        'dissolve' { $id = 1537 }    # ppEffectDissolve (when supported)
         default { $id = 3849 }
     }
+    $lab = if ($SlideNumber -gt 0) { "slide[$SlideNumber]" } else { 'slide' }
     try {
         $tr = $Slide.SlideShowTransition
         $tr.EntryEffect = $id
         if ($Seconds -gt 0.05 -and $Seconds -lt 9.9) {
             $tr.Duration = $Seconds
         }
-    } catch { }
+    } catch {
+        $msg = (Format-WpsComException $_)
+        $line = "${lab} SlideShowTransition (effect=$n, EntryEffect=$id): $msg"
+        if ($null -ne $ComWarnings) { [void]$ComWarnings.Add($line) }
+        else { Write-Warning $line }
+    }
+}
+
+function Resolve-WpsAnimEffectId {
+    param([string]$Name)
+    if (-not $Name) { return 9 }
+    switch ($Name.Trim().ToLowerInvariant()) {
+        'fade' { return 9 }        # msoAnimEffectFade
+        'appear' { return 1 }      # msoAnimEffectAppear
+        'fly' { return 7 }         # msoAnimEffectFly
+        'float' { return 5 }       # msoAnimEffectFloat
+        'wipe' { return 31 }       # msoAnimEffectWipe
+        'zoom' { return 16 }       # msoAnimEffectZoom
+        default { return 9 }
+    }
 }
 
 function Set-WpsSlideAnimateBuild {
     param(
         $Slide,
         [bool]$TwoColumn,
-        [bool]$Narrative = $false
+        [bool]$Narrative = $false,
+        [string]$EffectName = 'fade',
+        [int]$SlideNumber = 0,
+        [System.Collections.Generic.List[string]]$ComWarnings = $null
     )
+    $effectId = Resolve-WpsAnimEffectId -Name $EffectName
+    $lab = if ($SlideNumber -gt 0) { "slide[$SlideNumber]" } else { 'slide' }
+    function Add-AnimWarning {
+        param([string]$Text)
+        if ($null -ne $ComWarnings) { [void]$ComWarnings.Add($Text) }
+        else { Write-Warning $Text }
+    }
     try {
         $seq = $Slide.TimeLine.MainSequence
         if ($Narrative) {
+            # COM shape index order != visual reading order; sort top→left for stable builds
+            $list = [System.Collections.Generic.List[object]]::new()
             foreach ($j in 1..[int]$Slide.Shapes.Count) {
                 try {
                     $sh = $Slide.Shapes.Item($j)
                     if ($sh.HasTextFrame -ne -1) { continue }
-                    $null = $seq.AddEffect($sh, 9, 4, 1)
-                } catch { }
+                    $list.Add($sh)
+                } catch {
+                    Add-AnimWarning ("${lab} animateBuild: enumerate shape #${j}: " + (Format-WpsComException $_))
+                }
+            }
+            $sorted = @($list) | Sort-Object { [double]$_.Top }, { [double]$_.Left }
+            $si = 0
+            foreach ($sh in $sorted) {
+                $si++
+                try {
+                    $null = $seq.AddEffect($sh, $effectId, 4, 1)
+                } catch {
+                    Add-AnimWarning ("${lab} animateBuild AddEffect #$si (effectId=$effectId): " + (Format-WpsComException $_))
+                }
             }
             return
         }
@@ -295,16 +441,23 @@ function Set-WpsSlideAnimateBuild {
                 try {
                     $sh = $Slide.Shapes.Placeholders.Item($j)
                     if ($sh.HasTextFrame -eq -1) {
-                        # msoAnimEffectFade = 9 ; msoAnimateByParagraph ≈ 4 for Level in some builds
-                        $null = $seq.AddEffect($sh, 9, 4, 1)
+                        $null = $seq.AddEffect($sh, $effectId, 4, 1)
                     }
-                } catch { }
+                } catch {
+                    Add-AnimWarning ("${lab} animateBuild two-column placeholder ${j}: " + (Format-WpsComException $_))
+                }
             }
         } else {
             $shp = Get-WpsSlideMainBodyShape -Slide $Slide
             if ($shp) {
-                $null = $seq.AddEffect($shp, 9, 4, 1)
+                try {
+                    $null = $seq.AddEffect($shp, $effectId, 4, 1)
+                } catch {
+                    Add-AnimWarning ("${lab} animateBuild body shape: " + (Format-WpsComException $_))
+                }
             }
         }
-    } catch { }
+    } catch {
+        Add-AnimWarning ("${lab} TimeLine.MainSequence (animateBuild, effect=$EffectName): " + (Format-WpsComException $_))
+    }
 }

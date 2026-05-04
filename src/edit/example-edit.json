@@ -1,0 +1,26 @@
+{
+  "editVersion": "1.0",
+  "target": {
+    "dslPath": "specs/dsl/example-simple.json"
+  },
+  "operations": [
+    {
+      "op": "update",
+      "target": {
+        "slideId": "summary",
+        "elementId": "summary-points"
+      },
+      "patch": {
+        "items": [
+          "核心功能完成度达到 90%",
+          "缺陷修复周期下降 20%",
+          "集成测试风险已收敛"
+        ]
+      }
+    }
+  ],
+  "options": {
+    "validateAfterEdit": true,
+    "renderAfterEdit": false
+  }
+}
