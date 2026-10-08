@@ -1,4 +1,4 @@
-# action: insert-image — picture on slide (1-based)
+﻿# action: insert-image — picture on slide (1-based)
 param([string]$ArgsJson)
 $ErrorActionPreference = 'Stop'
 try {

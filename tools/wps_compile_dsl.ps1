@@ -1,4 +1,4 @@
-# action: compile-dsl — compile high-level PPT DSL to RenderPlan or legacy spec (no COM)
+﻿# action: compile-dsl — compile high-level PPT DSL to RenderPlan or legacy spec (no COM)
 param([string]$ArgsJson)
 $ErrorActionPreference = 'Stop'
 try {

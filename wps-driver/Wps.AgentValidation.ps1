@@ -1,4 +1,4 @@
-# Validation helpers for the two-stage AI Agent pipeline:
+﻿# Validation helpers for the two-stage AI Agent pipeline:
 # Planner Agent -> outline, Writer Agent -> PPT DSL v2.
 
 $script:PptPlannerSlideTypes = [string[]]@(

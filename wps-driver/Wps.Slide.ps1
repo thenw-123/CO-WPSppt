@@ -1,4 +1,4 @@
-# Add slides with layout constants (PowerPoint-compatible enums)
+﻿# Add slides with layout constants (PowerPoint-compatible enums)
 
 function Add-WpsSlide {
     param($Presentation, [int]$LayoutInt)

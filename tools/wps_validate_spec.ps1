@@ -1,4 +1,4 @@
-# action: validate-spec — check spec JSON structure before run-spec (no COM)
+﻿# action: validate-spec — check spec JSON structure before run-spec (no COM)
 param([string]$ArgsJson)
 $ErrorActionPreference = 'Stop'
 try {

@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
   Optional embedded chart from chart_data via WPS COM (best-effort).
 .NOTES

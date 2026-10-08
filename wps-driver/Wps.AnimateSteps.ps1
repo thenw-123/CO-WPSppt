@@ -1,4 +1,4 @@
-# Optional per-slide / theme.animateSteps — entrance timing & order (best-effort COM; WPS support varies)
+﻿# Optional per-slide / theme.animateSteps — entrance timing & order (best-effort COM; WPS support varies)
 
 function Resolve-WpsAnimTriggerTypeInt {
     param([string]$Name)

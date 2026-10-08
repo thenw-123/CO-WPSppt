@@ -1,4 +1,4 @@
-# action: add-slide — append slide with layout
+﻿# action: add-slide — append slide with layout
 param([string]$ArgsJson)
 $ErrorActionPreference = 'Stop'
 try {

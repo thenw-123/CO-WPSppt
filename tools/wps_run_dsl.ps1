@@ -1,4 +1,4 @@
-# action: run-dsl — compile PPT DSL to RenderPlan, then render via WPS COM
+﻿# action: run-dsl — compile PPT DSL to RenderPlan, then render via WPS COM
 param([string]$ArgsJson)
 $ErrorActionPreference = 'Stop'
 try {

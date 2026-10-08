@@ -1,4 +1,4 @@
-# action: new — create blank presentation and save to output
+﻿# action: new — create blank presentation and save to output
 param([string]$ArgsJson)
 $ErrorActionPreference = 'Stop'
 try {

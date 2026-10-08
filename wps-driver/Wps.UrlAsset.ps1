@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
   Secure download of remote images for slide assets (SSRF-hardened).
 .DESCRIPTION

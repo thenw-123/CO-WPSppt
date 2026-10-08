@@ -1,4 +1,4 @@
-# Speaker notes, optional theme file, and typography pass (best-effort for WPS COM)
+﻿# Speaker notes, optional theme file, and typography pass (best-effort for WPS COM)
 
 function Format-WpsComException {
     param($Err)

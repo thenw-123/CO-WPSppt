@@ -1,4 +1,4 @@
-# PPT DSL validation and compilation helpers.
+﻿# PPT DSL validation and compilation helpers.
 
 $script:PptDslKinds = [string[]]@(
     'cover', 'section', 'content', 'bullets', 'argument', 'comparison', 'timeline', 'datachart', 'data', 'swot', 'agenda', 'custom', 'left-image'

@@ -1,4 +1,4 @@
-# Shared helpers for OpenClaw WPS-PPT tools (dot-source from tools/*.ps1)
+﻿# Shared helpers for OpenClaw WPS-PPT tools (dot-source from tools/*.ps1)
 
 function Get-WpsProjectRoot {
     return (Resolve-Path (Join-Path $PSScriptRoot '..')).Path

@@ -1,4 +1,4 @@
-# Structural validation for ppt deck spec (aligns with specs/ppt-spec.schema.json)
+﻿# Structural validation for ppt deck spec (aligns with specs/ppt-spec.schema.json)
 
 $script:PptLayoutEnum = [string[]]@(
     'title', 'title-content', 'content', 'chart', 'section', 'two-content', 'blank',

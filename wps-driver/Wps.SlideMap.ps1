@@ -1,4 +1,4 @@
-# Sidecar slide map for partial edit rendering.
+﻿# Sidecar slide map for partial edit rendering.
 
 function Get-PptSlideMapPath {
     param([string]$PresentationPath)

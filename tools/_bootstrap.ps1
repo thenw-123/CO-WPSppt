@@ -1,4 +1,4 @@
-# Dot-source all wps-driver modules (same order for every tool)
+﻿# Dot-source all wps-driver modules (same order for every tool)
 $BootstrapToolsDir = $PSScriptRoot
 $BootstrapProjectRoot = Resolve-Path (Join-Path $BootstrapToolsDir '..')
 . (Join-Path $BootstrapProjectRoot 'wps-driver\Wps.Common.ps1')

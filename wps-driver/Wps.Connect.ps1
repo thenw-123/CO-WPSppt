@@ -1,4 +1,4 @@
-# WPS Presentation COM connection (Kwpp.Application and fallbacks)
+﻿# WPS Presentation COM connection (Kwpp.Application and fallbacks)
 
 $script:WpsProgIds = @(
     'Kwpp.Application',

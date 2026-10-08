@@ -1,4 +1,4 @@
-# Edit helpers for PPT DSL v2. Phase 1 edits the DSL source file and can
+﻿# Edit helpers for PPT DSL v2. Phase 1 edits the DSL source file and can
 # optionally trigger the existing full run-dsl renderer.
 
 function Test-PptEditRequestObject {

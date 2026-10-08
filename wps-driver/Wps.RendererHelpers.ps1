@@ -1,4 +1,4 @@
-# Renderer helper functions extracted from Wps.RunSpec.ps1.
+﻿# Renderer helper functions extracted from Wps.RunSpec.ps1.
 
 function Invoke-WpsSlideChartRender {
     param(

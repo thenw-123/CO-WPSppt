@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
   Invoke matplotlib (headless) to produce chart PNGs for slides.
 #>

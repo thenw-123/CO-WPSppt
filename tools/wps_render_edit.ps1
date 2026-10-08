@@ -1,4 +1,4 @@
-# action: render-edit — apply PPT Edit DSL and rebuild only affected PPTX slides.
+﻿# action: render-edit — apply PPT Edit DSL and rebuild only affected PPTX slides.
 param([string]$ArgsJson)
 $ErrorActionPreference = 'Stop'
 try {

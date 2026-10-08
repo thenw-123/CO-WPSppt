@@ -1,4 +1,4 @@
-# Single entry for OpenClaw Gateway: -Action <name> -ArgsJson <json>
+﻿# Single entry for OpenClaw Gateway: -Action <name> -ArgsJson <json>
 param(
     [Parameter(Mandatory = $true)]
     [string]$Action,

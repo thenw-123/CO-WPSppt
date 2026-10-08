@@ -1,4 +1,4 @@
-# action: set-notes — speaker notes on slide (1-based)
+﻿# action: set-notes — speaker notes on slide (1-based)
 param([string]$ArgsJson)
 $ErrorActionPreference = 'Stop'
 try {

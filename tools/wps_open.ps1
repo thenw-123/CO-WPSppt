@@ -1,4 +1,4 @@
-# action: open — open existing pptx and bind session
+﻿# action: open — open existing pptx and bind session
 param([string]$ArgsJson)
 $ErrorActionPreference = 'Stop'
 try {

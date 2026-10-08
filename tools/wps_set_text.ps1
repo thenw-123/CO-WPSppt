@@ -1,4 +1,4 @@
-# action: set-text — title / subtitle / bullets on slide index (1-based)
+﻿# action: set-text — title / subtitle / bullets on slide index (1-based)
 param([string]$ArgsJson)
 $ErrorActionPreference = 'Stop'
 try {

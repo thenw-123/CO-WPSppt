@@ -1,4 +1,4 @@
-# Renderer-facing plan helpers. RenderPlan is the execution source. The normal
+﻿# Renderer-facing plan helpers. RenderPlan is the execution source. The normal
 # path is DSL -> Layout Engine -> atomic operations; legacySpec remains only as
 # an explicit compatibility format.
 

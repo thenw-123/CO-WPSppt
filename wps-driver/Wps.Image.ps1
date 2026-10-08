@@ -1,4 +1,4 @@
-# Insert picture on slide (local file path)
+﻿# Insert picture on slide (local file path)
 
 function Resolve-WpsSlideImagePlacement {
     param(

@@ -1,4 +1,4 @@
-# action: exec — dot-source a .ps1 under project root only (no arbitrary Invoke-Expression)
+﻿# action: exec — dot-source a .ps1 under project root only (no arbitrary Invoke-Expression)
 param([string]$ArgsJson)
 $ErrorActionPreference = 'Stop'
 try {

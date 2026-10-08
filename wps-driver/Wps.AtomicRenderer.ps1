@@ -1,4 +1,4 @@
-# Atomic WPS renderer. It executes RenderPlan operations only; semantic DSL
+﻿# Atomic WPS renderer. It executes RenderPlan operations only; semantic DSL
 # decisions must already be resolved by Wps.LayoutEngine.ps1.
 
 function Get-WpsAtomicFontSize {

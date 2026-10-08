@@ -1,4 +1,4 @@
-# Narrative layout variants on blank slides: timeline, comparison, thesis-chain, argument,
+﻿# Narrative layout variants on blank slides: timeline, comparison, thesis-chain, argument,
 # thesis-vertical (一页一论题·竖向三步), SWOT 四象限.
 # Requires Wps.Polish.ps1 (Convert-HexToOfficeRgbLong) — load after Polish in bootstrap.
 

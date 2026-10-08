@@ -1,4 +1,4 @@
-# action: edit-dsl — apply PPT Edit DSL v1 to a PPT DSL v2 file.
+﻿# action: edit-dsl — apply PPT Edit DSL v1 to a PPT DSL v2 file.
 # Phase 1 edits the DSL source, then optionally invokes full run-dsl rendering.
 param([string]$ArgsJson)
 $ErrorActionPreference = 'Stop'

@@ -1,4 +1,4 @@
-# Partial PPTX update for edited PPT DSL. Rebuilds affected slides using the
+﻿# Partial PPTX update for edited PPT DSL. Rebuilds affected slides using the
 # existing WPS renderer in a temporary one-slide deck, then copies that slide
 # into the existing presentation at the sidecar-mapped index.
 

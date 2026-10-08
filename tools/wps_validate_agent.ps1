@@ -1,4 +1,4 @@
-# action: validate-agent — validate two-stage Agent outputs
+﻿# action: validate-agent — validate two-stage Agent outputs
 # Planner: outlinePath/outline. Writer: dslPath/dsl.
 param([string]$ArgsJson)
 $ErrorActionPreference = 'Stop'

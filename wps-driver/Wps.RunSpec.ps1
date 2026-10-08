@@ -1,4 +1,4 @@
-# Build full deck from JSON spec. Caller must dot-source Common, Connect, Presentation, Slide, Text, Image, Polish, LayoutNarrative, ChartRender, ChartCom, UrlAsset first.
+﻿# Build full deck from JSON spec. Caller must dot-source Common, Connect, Presentation, Slide, Text, Image, Polish, LayoutNarrative, ChartRender, ChartCom, UrlAsset first.
 
 function Invoke-WpsDeckFromSpec {
     param(

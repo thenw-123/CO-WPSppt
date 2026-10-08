@@ -1,4 +1,4 @@
-# Pester 3/5 compatible (no top-level BeforeAll). Run: Invoke-Pester .\tests\Validation.Tests.ps1
+﻿# Pester 3/5 compatible (no top-level BeforeAll). Run: Invoke-Pester .\tests\Validation.Tests.ps1
 # Pester 5+ optional: Install-Module Pester -MinimumVersion 5.0.0 -Force
 
 $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path

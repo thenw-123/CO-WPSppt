@@ -1,4 +1,4 @@
-# Pure layout engine: semantic DSL (no coordinates) -> atomic RenderPlan operations.
+﻿# Pure layout engine: semantic DSL (no coordinates) -> atomic RenderPlan operations.
 # Coordinates come only from layout functions below; the atomic renderer executes ops as-is.
 
 function Get-PptLayoutSlideConstants {

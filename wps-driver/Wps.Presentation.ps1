@@ -1,4 +1,4 @@
-# Presentation lifecycle + session binding
+﻿# Presentation lifecycle + session binding
 
 function Normalize-FsPath {
     param([string]$Path)

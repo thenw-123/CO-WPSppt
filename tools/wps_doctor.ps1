@@ -1,4 +1,4 @@
-# action: doctor — environment checks (paths, session, optional live COM)
+﻿# action: doctor — environment checks (paths, session, optional live COM)
 param([string]$ArgsJson)
 $ErrorActionPreference = 'Stop'
 try {

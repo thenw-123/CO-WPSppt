@@ -1,4 +1,4 @@
-# Download Wikimedia Commons thumbnails via the MediaWiki API (standard iiurlwidth steps; see https://w.wiki/GHai).
+﻿# Download Wikimedia Commons thumbnails via the MediaWiki API (standard iiurlwidth steps; see https://w.wiki/GHai).
 
 $script:CommonsApiUserAgent = 'OpenClawWpsPpt/1.4 (educational deck; +https://www.mediawiki.org/wiki/API:Etiquette)'
 

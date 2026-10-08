@@ -1,4 +1,4 @@
-# SSRF / URL policy tests (no network). Run: Invoke-Pester .\tests\UrlAsset.Tests.ps1
+﻿# SSRF / URL policy tests (no network). Run: Invoke-Pester .\tests\UrlAsset.Tests.ps1
 
 $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 . (Join-Path $RepoRoot 'wps-driver\Wps.UrlAsset.ps1')

@@ -1,4 +1,4 @@
-# action: run-spec — build deck from specs/example-spec.json or inline spec object
+﻿# action: run-spec — build deck from specs/example-spec.json or inline spec object
 param([string]$ArgsJson)
 $ErrorActionPreference = 'Stop'
 try {

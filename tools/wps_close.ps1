@@ -1,4 +1,4 @@
-# action: close — close active presentation (optional save)
+﻿# action: close — close active presentation (optional save)
 param([string]$ArgsJson)
 $ErrorActionPreference = 'Stop'
 try {
